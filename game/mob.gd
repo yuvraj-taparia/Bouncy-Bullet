@@ -4,6 +4,7 @@ signal player_touched(body: Node2D)
 
 enum State { PATROL, ATTACK, HIT, DEFEATED }
 
+const SPRITE_SCALE := 1.05
 const FROG_HOP_DURATION := 0.9
 const FROG_HOP_HEIGHT := 12.0
 
@@ -76,6 +77,9 @@ func _ready() -> void:
 		var dimensions: Vector2 = hitbox.shape.size
 		sprite.scale = dimensions / Vector2(16, 16)
 		sprite.position = hitbox.position - dimensions * 0.5
+	# Scale around the mob's placement point so grounded sprites stay on the floor.
+	sprite.position *= SPRITE_SCALE
+	sprite.scale *= SPRITE_SCALE
 	sprite.animation_finished.connect(_on_animation_finished)
 	glow.position = hitbox.position
 	glow.scale.x = maxf(1.0, hitbox.shape.size.x / 24.0)
@@ -125,7 +129,7 @@ func _fallback_texture(color: Color, lift: int) -> ImageTexture:
 
 func _physics_process(delta: float) -> void:
 	attack_cooldown = maxf(0.0, attack_cooldown - delta)
-	if not hatching and state == State.PATROL and attack_cooldown == 0.0:
+	if _can_attack():
 		var player := get_tree().get_first_node_in_group(&"player") as Player
 		if is_instance_valid(player) and not player.frozen:
 			var distance := player.global_position - Vector2(0, 10) - hitbox.global_position
@@ -140,7 +144,7 @@ func _physics_process(delta: float) -> void:
 	if moving and follows_patrol:
 		phase += delta * patrol_speed
 	var next_position := origin + patrol * sin(phase)
-	# Finish the current arc even if an attack or hit interrupts the jump clip.
+	# Finish the current arc even if a hit interrupts the jump clip.
 	if frog_hop_time < FROG_HOP_DURATION:
 		frog_hop_time = minf(frog_hop_time + delta, FROG_HOP_DURATION)
 		next_position.y -= FROG_HOP_HEIGHT * sin(frog_hop_time / FROG_HOP_DURATION * PI)
@@ -167,9 +171,16 @@ func _attack(direction: float) -> void:
 	attack_index = (attack_index + 1) % clips.size()
 
 
+func _can_attack() -> bool:
+	# Keep special patrol sequences together, including hidden and airborne frames.
+	return state == State.PATROL and not hatching and attack_cooldown == 0.0 and (
+		sprite.animation in [&"idle", &"idle_1", &"idle_2", &"walk"]
+	)
+
+
 func _on_animation_finished() -> void:
 	if state == State.DEFEATED:
-		if sprite.animation == &"dead":
+		if sprite.animation in [&"dead", &"kamikaze"]:
 			queue_free()
 		else:
 			_play_defeat()
@@ -190,7 +201,7 @@ func _on_animation_finished() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if state != State.DEFEATED and body.is_in_group(&"player"):
-		if state == State.PATROL and not hatching and attack_cooldown == 0.0:
+		if _can_attack():
 			_attack(body.global_position.x - global_position.x)
 		player_touched.emit(body)
 
@@ -221,7 +232,9 @@ func hit() -> void:
 
 
 func _play_defeat() -> void:
-	if sprite.sprite_frames.has_animation(&"dead"):
-		sprite.play(&"dead")
+	var clip := &"kamikaze" if species == "shoebill_chick" else &"dead"
+	if sprite.sprite_frames.has_animation(clip):
+		sprite.stop()
+		sprite.play(clip)
 	else:
 		queue_free()
