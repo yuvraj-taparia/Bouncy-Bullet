@@ -13,7 +13,7 @@
 [ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Stone_2.png" id="stone"]
 [ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Entry_3.png" id="exit"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_goal"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_safezone"]
 size = Vector2(28, 40)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fall"]
@@ -126,30 +126,30 @@ theme_override_font_sizes/font_size = 14
 text = "START"
 horizontal_alignment = 1
 
-[node name="GoalSign" type="Label" parent="Decoration"]
-offset_left = 531.0
+[node name="SafezoneSign" type="Label" parent="Decoration"]
+offset_left = 516.0
 offset_top = 177.0
-offset_right = 601.0
+offset_right = 616.0
 offset_bottom = 199.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.97, 0.84, 1)
 theme_override_colors/font_outline_color = Color(0.1, 0.13, 0.23, 1)
 theme_override_constants/outline_size = 6
 theme_override_font_sizes/font_size = 14
-text = "ZIEL"
+text = "SAFEZONE"
 horizontal_alignment = 1
 
 [node name="PlayerSpawn" type="Marker2D" parent="."]
 position = Vector2(72, 220)
 
-[node name="Goal" type="Area2D" parent="."]
+[node name="Safezone" type="Area2D" parent="."]
 position = Vector2(566, 220)
 collision_layer = 0
 collision_mask = 1
 monitorable = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Goal"]
-shape = SubResource("RectangleShape2D_goal")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Safezone"]
+shape = SubResource("RectangleShape2D_safezone")
 
 [node name="FallZone" type="Area2D" parent="."]
 position = Vector2(320, 704)
