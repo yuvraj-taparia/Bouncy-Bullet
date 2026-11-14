@@ -3,8 +3,10 @@ extends SceneTree
 # Use an override.cfg with a dedicated application/config/custom_user_dir_name
 # beginning with "bouncy-bullet-test-". Run with --script in the order
 # -- fresh, -- seed, -- migrate, -- restart. Between seed and migrate, run
-# -- failed-write under an OS file-size limit below the serialized save size.
+# -- failed-write under a 128-byte OS file-size limit with SIGXFSZ ignored.
 const MAP := "res://maps/campaign/meadow_path.tscn"
+const EXTRA_SECTION := "profile]archive"
+const SHORT_WRITE_BYTES := 128
 
 
 func _initialize() -> void:
@@ -57,6 +59,7 @@ func _seed() -> String:
 	previous.set_value("player", "owned", ["glock", "pistol"])
 	previous.set_value("player", "equipped", "pistol")
 	previous.set_value("player", "cleared", [0, 2])
+	previous.set_value(EXTRA_SECTION, "revision", 42)
 	if previous.save(SaveData.PATH) != OK:
 		return "Could not seed the v2 save"
 	var wallet := ConfigFile.new()
@@ -67,6 +70,9 @@ func _seed() -> String:
 
 
 func _check_failed_write() -> String:
+	var temp_path := SaveData.PATH + ".tmp"
+	if FileAccess.file_exists(temp_path) or DirAccess.dir_exists_absolute(temp_path):
+		return "Expected no existing temporary save"
 	var before := FileAccess.get_file_as_bytes(SaveData.PATH)
 	var wallet_before := FileAccess.get_file_as_bytes(SaveData.LEGACY_WALLET)
 	if before.is_empty() or wallet_before.is_empty():
@@ -75,13 +81,23 @@ func _check_failed_write() -> String:
 	SaveData.ensure_loaded()
 	if SaveData.coins != 120 or SaveData.equipped != &"pistol":
 		return "Failed migration changed the in-memory balance or weapon"
+	if not _is_partial_save(temp_path):
+		return "Expected the migration to write exactly 128 bytes to the temporary save"
+	if DirAccess.remove_absolute(temp_path) != OK:
+		return "Could not remove the partial migration save before testing the reward"
 	if SaveData.finish_level(MAP, 1) != -1 or SaveData.coins != 120 or not SaveData.cleared.is_empty():
 		return "Failed reward changed the in-memory balance or progress"
+	if not _is_partial_save(temp_path):
+		return "Expected the reward to write exactly 128 bytes to the temporary save"
 	if FileAccess.get_file_as_bytes(SaveData.PATH) != before:
 		return "Failed write replaced the existing save"
 	if FileAccess.get_file_as_bytes(SaveData.LEGACY_WALLET) != wallet_before:
 		return "Failed write changed the legacy wallet"
 	return ""
+
+
+func _is_partial_save(path: String) -> bool:
+	return FileAccess.file_exists(path) and FileAccess.get_file_as_bytes(path).size() == SHORT_WRITE_BYTES
 
 
 func _check_migration() -> String:
@@ -106,8 +122,13 @@ func _check_restart() -> String:
 	var cfg := ConfigFile.new()
 	if cfg.load(SaveData.PATH) != OK:
 		return "Could not read the saved progress"
-	if cfg.get_value("player", "cleared", []) != [0, 2]:
-		return "Restart lost the old level clears"
-	if not cfg.get_value("player", "legacy_wallet_imported", false):
+	var old_clears: Variant = cfg.get_value("player", "cleared", [])
+	if not old_clears is Array or old_clears != [0, 2]:
+		return "Expected the old level clears [0, 2]"
+	var revision: Variant = cfg.get_value(EXTRA_SECTION, "revision", -1)
+	if not revision is int or revision != 42:
+		return "Restart lost the section containing ] or its value"
+	var imported: Variant = cfg.get_value("player", "legacy_wallet_imported", false)
+	if not imported is bool or not imported:
 		return "The wallet import marker was not saved"
 	return ""

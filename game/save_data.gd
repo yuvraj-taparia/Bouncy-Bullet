@@ -93,14 +93,14 @@ static func _save() -> Error:
 
 
 static func _write_save(path: String) -> Error:
-	var contents := _config.encode_to_text().to_utf8_buffer()
-	var file := FileAccess.open(path, FileAccess.WRITE)
-	if file == null:
-		return FileAccess.get_open_error()
-	var written := file.store_buffer(contents)
-	file.close()
-	# A buffered write can fail during close.
-	if not written or FileAccess.get_file_as_bytes(path) != contents:
+	var error := _config.save(path)
+	if error != OK:
+		return error
+	# ConfigFile.save() can report success after a short write.
+	var written := ConfigFile.new()
+	if written.load(path) != OK or written.get_sections() != _config.get_sections():
+		return ERR_FILE_CANT_WRITE
+	if written.encode_to_text() != _config.encode_to_text():
 		return ERR_FILE_CANT_WRITE
 	return OK
 
