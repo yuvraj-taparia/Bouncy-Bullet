@@ -103,6 +103,18 @@ position = Vector2(160, 173)
 [node name="Coin3" parent="Coins" instance=ExtResource("3_coin")]
 position = Vector2(648, 206)
 
+[node name="Coin4" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(88, 222)
+
+[node name="Coin5" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(256, 206)
+
+[node name="Coin6" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(390, 222)
+
+[node name="Coin7" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(592, 206)
+
 [node name="Mobs" type="Node2D" parent="."]
 
 [node name="Shoebill1" parent="Mobs" instance=ExtResource("5_mob")]
