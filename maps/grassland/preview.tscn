@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://maps/grassland/grassland.tscn" id="1_grassland"]
+
+[node name="GrasslandPreview" type="Node2D"]
+
+[node name="Grassland" parent="." instance=ExtResource("1_grassland")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 168)
+zoom = Vector2(1.6, 1.6)
