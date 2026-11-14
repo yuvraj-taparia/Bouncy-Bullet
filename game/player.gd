@@ -12,9 +12,11 @@ const WALK_SPEED := 100.0
 const GROUND_ACCEL := 900.0
 const AIR_ACCEL := 260.0
 const MAX_SPEED := 620.0
+const RESPAWN_GROUND_DISTANCE := 32.0
 @onready var body = $Body
 @onready var gun: Node2D = $Gun
 @onready var camera: Camera2D = $Camera2D
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 ## Which gun to carry; empty means the one equipped in the shop.
 @export var gun_id: StringName = &""
@@ -28,6 +30,8 @@ var _cooldown := 0.0
 var _reloading := false
 var _shake := 0.0
 var _was_on_floor := true
+var _aim_with_mouse := false
+var _respawn_blink: Tween
 
 
 func _ready() -> void:
@@ -42,13 +46,21 @@ func _ready() -> void:
 	gun.add_child(rig)
 	rig.setup(gun_data, get_parent())
 	rig.reload_finished.connect(_finish_reload)
+	_point_gun(Vector2.LEFT)
+
+
+func _input(event: InputEvent) -> void:
+	if is_physics_processing() and event is InputEventMouseMotion and event.relative != Vector2.ZERO:
+		_aim_with_mouse = true
 
 
 func _physics_process(delta: float) -> void:
-	var aim := (get_global_mouse_position() - gun.global_position).normalized()
-	if aim == Vector2.ZERO:
-		aim = Vector2.RIGHT * body.facing
-	_point_gun(aim)
+	var aim := Vector2.LEFT
+	if _aim_with_mouse:
+		aim = (get_global_mouse_position() - gun.global_position).normalized()
+		if aim == Vector2.ZERO:
+			aim = Vector2.RIGHT * body.facing
+		_point_gun(aim)
 
 	velocity.y += GRAVITY * delta
 	var input := 0.0 if frozen else Input.get_axis(&"move_left", &"move_right")
@@ -145,14 +157,40 @@ func hit_by_own_bullet(push: Vector2) -> void:
 	_squash(Vector2(1.2, 0.85))
 
 
-func respawn(at: Vector2) -> void:
-	global_position = at
+func prepare_respawn(at: Vector2) -> void:
+	if not is_inside_tree():
+		return
+	frozen = true
+	set_physics_process(false)
+	collision_shape.disabled = true
+	# Spawn markers sit above the floor, and gravity is paused during the countdown.
+	var ground_ray := PhysicsRayQueryParameters2D.create(
+		at, at + Vector2.DOWN * RESPAWN_GROUND_DISTANCE, collision_mask, [get_rid()]
+	)
+	var ground := get_world_2d().direct_space_state.intersect_ray(ground_ray)
+	global_position = ground.get("position", at)
 	velocity = Vector2.ZERO
 	ammo = max_ammo
+	_cooldown = 0.0
 	_reloading = false
 	rig.cancel_reload()
+	_shake = 0.0
+	camera.offset = Vector2.ZERO
 	camera.reset_smoothing()
+	_aim_with_mouse = false
+	_point_gun(Vector2.LEFT)
+	_respawn_blink = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_respawn_blink.tween_property(self, "modulate:a", 0.65, 0.55)
+	_respawn_blink.tween_property(self, "modulate:a", 1.0, 0.55)
 	ammo_changed.emit(ammo, max_ammo)
+
+
+func finish_respawn() -> void:
+	_respawn_blink.kill()
+	modulate.a = 1.0
+	collision_shape.disabled = false
+	set_physics_process(true)
+	frozen = false
 
 
 func _squash(amount: Vector2) -> void:

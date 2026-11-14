@@ -9,6 +9,7 @@ signal restart_requested
 var level: Node2D
 @onready var player: Player = $Player
 @onready var hud = $HUD
+@onready var _respawn_timer: Timer = $RespawnTimer
 
 var _time := 0.0
 var _shots := 0
@@ -47,6 +48,8 @@ func _process(delta: float) -> void:
 	if not _won:
 		_time += delta
 	hud.set_time(_time)
+	if not _respawn_timer.is_stopped():
+		hud.set_respawn_countdown(ceili(_respawn_timer.time_left))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -68,21 +71,32 @@ func _spawn_point() -> Vector2:
 
 
 func _on_obstacle_touched(body: Node2D) -> void:
-	if body == player and not _won:
-		player.respawn.call_deferred(_spawn_point())
+	if body == player:
+		_start_respawn()
 
 
 func _on_fall_zone_entered(body: Node2D) -> void:
-	if body != player or _won:
-		return
-	_splashes += 1
-	# Respawn on the next physics frame; moving a body inside its own
-	# collision callback is unreliable.
-	player.respawn.call_deferred(_spawn_point())
+	if body == player and _start_respawn():
+		_splashes += 1
+
+
+func _start_respawn() -> bool:
+	if _won or not _respawn_timer.is_stopped():
+		return false
+	# Move the player and disable its collision outside the physics callback.
+	player.prepare_respawn.call_deferred(_spawn_point())
+	_respawn_timer.start()
+	hud.set_respawn_countdown(ceili(_respawn_timer.wait_time))
+	return true
+
+
+func _on_respawn_timer_timeout() -> void:
+	player.finish_respawn()
+	hud.set_respawn_countdown(0)
 
 
 func _on_safezone_entered(body: Node2D) -> void:
-	if body != player or _won:
+	if body != player or _won or not _respawn_timer.is_stopped():
 		return
 	_won = true
 	player.frozen = true

@@ -18,3 +18,9 @@ script = ExtResource("5_crosshair")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 script = ExtResource("4_hud")
+
+[node name="RespawnTimer" type="Timer" parent="."]
+wait_time = 3.0
+one_shot = true
+
+[connection signal="timeout" from="RespawnTimer" to="." method="_on_respawn_timer_timeout"]

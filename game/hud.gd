@@ -9,6 +9,7 @@ var _ammo_box: HBoxContainer
 var _time_label: Label
 var _coin_label: Label
 var _hint: Label
+var _respawn: Label
 var _win: Label
 
 
@@ -46,6 +47,12 @@ func _ready() -> void:
 	_hint.offset_bottom = -16
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_hint.text = "A / D walk   ·   Click to shoot — the kick throws you the other way   ·   Shots refill on landing   ·   R restart   ·   Esc menu"
+
+	_respawn = _make_label(root, 34)
+	_respawn.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_respawn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_respawn.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_respawn.hide()
 
 	_win = _make_label(root, 34)
 	_win.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -95,6 +102,11 @@ func set_time(seconds: float) -> void:
 
 func set_coins(collected: int, total: int) -> void:
 	_coin_label.text = "Coins %d/%d" % [collected, total]
+
+
+func set_respawn_countdown(seconds: int) -> void:
+	_respawn.visible = seconds > 0
+	_respawn.text = "RESPAWN IN %d" % seconds
 
 
 func show_win(seconds: float, shots: int, splashes: int, coins_earned := 0, coins_total := 0) -> void:
