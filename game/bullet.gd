@@ -4,12 +4,13 @@ extends Node2D
 ## player who fired it and knock them along its path ("bounce back").
 
 const SPEED := 650.0
-const MAX_BOUNCES := 3
-const LIFETIME := 1.6
 const KNOCKBACK := 230.0
 
 var direction := Vector2.RIGHT
 var shooter: CharacterBody2D
+var max_bounces := 3
+var lifetime := 1.6
+var tint := Color.WHITE
 var bounces := 0
 var _age := 0.0
 var _sprite: Sprite2D
@@ -22,13 +23,14 @@ func _ready() -> void:
 	_sprite.hframes = 2
 	_sprite.frame = 1
 	_sprite.scale = Vector2(0.5, 0.5)
+	_sprite.modulate = tint
 	add_child(_sprite)
 	rotation = direction.angle()
 
 
 func _physics_process(delta: float) -> void:
 	_age += delta
-	if _age > LIFETIME:
+	if _age > lifetime:
 		queue_free()
 		return
 
@@ -57,7 +59,7 @@ func _physics_process(delta: float) -> void:
 		global_position = hit.position + normal * 0.5
 		SpriteSheets.spawn_fx(get_parent(), SpriteSheets.impact(), hit.position, normal.angle())
 		bounces += 1
-		if bounces > MAX_BOUNCES:
+		if bounces > max_bounces:
 			queue_free()
 			return
 		direction = direction.bounce(normal)

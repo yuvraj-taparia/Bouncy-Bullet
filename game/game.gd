@@ -5,6 +5,8 @@ extends Node2D
 signal restart_requested
 
 @export var level_scene: PackedScene
+## Position in the level list (0 = level 1); used to remember cleared levels.
+@export var level_index := 0
 
 var level: Node2D
 @onready var player: Player = $Player
@@ -26,7 +28,7 @@ func _ready() -> void:
 	player.camera.reset_smoothing()
 	player.ammo_changed.connect(hud.set_ammo)
 	player.fired.connect(func(): _shots += 1)
-	hud.set_ammo(player.ammo, Player.MAX_AMMO)
+	hud.set_ammo(player.ammo, player.max_ammo)
 	level.get_node("Safezone").body_entered.connect(_on_safezone_entered)
 	level.get_node("FallZone").body_entered.connect(_on_fall_zone_entered)
 	var coins := level.get_node("Coins").get_children()
@@ -74,4 +76,5 @@ func _on_safezone_entered(body: Node2D) -> void:
 		return
 	_won = true
 	player.frozen = true
-	hud.show_win(_time, _shots, _splashes)
+	var earned := SaveData.finish_level(level_index, _coins_collected)
+	hud.show_win(_time, _shots, _splashes, earned, SaveData.coins)

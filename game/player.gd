@@ -1,7 +1,8 @@
 class_name Player
 extends CharacterBody2D
 ## Recoil platformer hero. Walk with A/D; aim with the mouse; every shot of the
-## Desert Eagle kicks you the opposite way. Shots refill when you land.
+## equipped gun kicks you the opposite way. Shots refill when you land.
+## Gun stats (recoil, ammo, pellets...) live in game/guns.gd.
 
 signal ammo_changed(ammo: int, max_ammo: int)
 signal fired
@@ -10,10 +11,8 @@ const GRAVITY := 900.0
 const WALK_SPEED := 100.0
 const GROUND_ACCEL := 900.0
 const AIR_ACCEL := 260.0
-const RECOIL := 360.0
 const MAX_SPEED := 620.0
-const MAX_AMMO := 3
-const FIRE_COOLDOWN := 0.22
+const NO_ANIM_RELOAD_TIME := 0.35
 
 const CasingScript := preload("res://game/casing.gd")
 
@@ -23,17 +22,31 @@ const CasingScript := preload("res://game/casing.gd")
 @onready var muzzle: Marker2D = $Gun/Muzzle
 @onready var camera: Camera2D = $Camera2D
 
-var ammo := MAX_AMMO
+## Which gun to carry; empty means the one equipped in the shop.
+@export var gun_id: StringName = &""
+
+var gun_data: Dictionary
+var max_ammo := 3
+var ammo := 3
 var frozen := false
 var _cooldown := 0.0
 var _reloading := false
+var _reload_timer := 0.0
 var _shake := 0.0
 var _was_on_floor := true
 
 
 func _ready() -> void:
 	ensure_input_actions()
-	gun_sprite.sprite_frames = SpriteSheets.desert_eagle()
+	if gun_id == &"":
+		SaveData.ensure_loaded()
+		gun_id = SaveData.equipped
+	gun_data = Guns.get_gun(gun_id)
+	max_ammo = gun_data.ammo
+	ammo = max_ammo
+	gun_sprite.sprite_frames = Guns.frames(gun_id)
+	gun_sprite.offset = gun_data.grip
+	muzzle.position = gun_data.muzzle
 	gun_sprite.play(&"idle")
 	gun_sprite.animation_finished.connect(_on_gun_animation_finished)
 
@@ -65,8 +78,12 @@ func _physics_process(delta: float) -> void:
 	if on_floor and not _was_on_floor:
 		_squash(Vector2(1.3, 0.75))
 	_was_on_floor = on_floor
-	if on_floor and ammo < MAX_AMMO and not _reloading:
+	if on_floor and ammo < max_ammo and not _reloading:
 		_start_reload()
+	if _reloading and not gun_sprite.sprite_frames.has_animation(&"reload"):
+		_reload_timer -= delta
+		if _reload_timer <= 0.0:
+			_finish_reload()
 
 	_update_shake(delta)
 
@@ -82,14 +99,14 @@ func _shoot(aim: Vector2) -> void:
 	if ammo <= 0:
 		return
 	ammo -= 1
-	_cooldown = FIRE_COOLDOWN
+	_cooldown = gun_data.cooldown
 	_reloading = false
 
 	# Stop any motion toward where we're aiming, then kick the other way.
 	var along := velocity.dot(aim)
 	if along > 0.0:
 		velocity -= aim * along
-	velocity += -aim * RECOIL
+	velocity += -aim * float(gun_data.recoil)
 	velocity = velocity.limit_length(MAX_SPEED)
 
 	gun_sprite.play(&"shoot")
@@ -97,11 +114,20 @@ func _shoot(aim: Vector2) -> void:
 	var world := get_parent()
 	SpriteSheets.spawn_fx(world, SpriteSheets.muzzle_flash(), muzzle.global_position, aim.angle(), Vector2(12, 0))
 
-	var bullet := Bullet.new()
-	bullet.direction = aim
-	bullet.shooter = self
-	world.add_child(bullet)
-	bullet.global_position = muzzle.global_position
+	var pellets: int = gun_data.pellets
+	var spread: float = gun_data.spread
+	for i in pellets:
+		var angle_offset := randf_range(-spread, spread) * 0.5
+		if pellets > 1:
+			angle_offset = lerpf(-spread * 0.5, spread * 0.5, float(i) / (pellets - 1)) + randf_range(-0.04, 0.04)
+		var bullet := Bullet.new()
+		bullet.direction = aim.rotated(angle_offset)
+		bullet.shooter = self
+		bullet.max_bounces = gun_data.bounces
+		bullet.lifetime = gun_data.lifetime
+		bullet.tint = gun_data.bullet_color
+		world.add_child(bullet)
+		bullet.global_position = muzzle.global_position
 
 	var casing := Sprite2D.new()
 	casing.set_script(CasingScript)
@@ -112,20 +138,31 @@ func _shoot(aim: Vector2) -> void:
 
 	_squash(Vector2(0.85, 1.15))
 	_shake = 3.0
-	ammo_changed.emit(ammo, MAX_AMMO)
+	ammo_changed.emit(ammo, max_ammo)
 	fired.emit()
 
 
 func _start_reload() -> void:
 	_reloading = true
-	gun_sprite.play(&"reload")
+	if gun_sprite.sprite_frames.has_animation(&"reload"):
+		gun_sprite.play(&"reload")
+	else:
+		# The shotgun and rifle sprites have no reload strip: give the gun a
+		# quick spin-tilt instead and refill after a short delay.
+		_reload_timer = NO_ANIM_RELOAD_TIME
+		gun_sprite.rotation = -0.6
+		create_tween().tween_property(gun_sprite, "rotation", 0.0, NO_ANIM_RELOAD_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+
+func _finish_reload() -> void:
+	_reloading = false
+	ammo = max_ammo
+	ammo_changed.emit(ammo, max_ammo)
 
 
 func _on_gun_animation_finished() -> void:
 	if gun_sprite.animation == &"reload" and _reloading:
-		_reloading = false
-		ammo = MAX_AMMO
-		ammo_changed.emit(ammo, MAX_AMMO)
+		_finish_reload()
 	gun_sprite.play(&"idle")
 
 
@@ -139,11 +176,11 @@ func hit_by_own_bullet(push: Vector2) -> void:
 func respawn(at: Vector2) -> void:
 	global_position = at
 	velocity = Vector2.ZERO
-	ammo = MAX_AMMO
+	ammo = max_ammo
 	_reloading = false
 	gun_sprite.play(&"idle")
 	camera.reset_smoothing()
-	ammo_changed.emit(ammo, MAX_AMMO)
+	ammo_changed.emit(ammo, max_ammo)
 
 
 func _squash(amount: Vector2) -> void:

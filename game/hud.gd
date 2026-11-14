@@ -5,6 +5,7 @@ const TEXT := Color(1, 0.97, 0.84)
 const OUTLINE := Color(0.1, 0.13, 0.23)
 
 var _ammo_icons: Array[TextureRect] = []
+var _ammo_box: HBoxContainer
 var _time_label: Label
 var _coin_label: Label
 var _hint: Label
@@ -18,21 +19,10 @@ func _ready() -> void:
 	root.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(root)
 
-	var ammo_box := HBoxContainer.new()
-	ammo_box.position = Vector2(20, 16)
-	ammo_box.add_theme_constant_override("separation", 6)
-	root.add_child(ammo_box)
-	var bullet_icon := AtlasTexture.new()
-	bullet_icon.atlas = load(SpriteSheets.GUNS + "bullet.png")
-	bullet_icon.region = Rect2(22, 2, 22, 12)
-	for i in Player.MAX_AMMO:
-		var icon := TextureRect.new()
-		icon.texture = bullet_icon
-		icon.custom_minimum_size = Vector2(44, 24)
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		ammo_box.add_child(icon)
-		_ammo_icons.append(icon)
+	_ammo_box = HBoxContainer.new()
+	_ammo_box.position = Vector2(20, 16)
+	_ammo_box.add_theme_constant_override("separation", 6)
+	root.add_child(_ammo_box)
 
 	_time_label = _make_label(root, 22)
 	_time_label.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
@@ -55,7 +45,7 @@ func _ready() -> void:
 	_hint.offset_top = -48
 	_hint.offset_bottom = -16
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hint.text = "A / D walk   ·   Click to shoot — the kick throws you the other way   ·   3 shots, refill on landing   ·   R restart"
+	_hint.text = "A / D walk   ·   Click to shoot — the kick throws you the other way   ·   Shots refill on landing   ·   R restart   ·   Esc menu"
 
 	_win = _make_label(root, 34)
 	_win.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -75,9 +65,28 @@ func _make_label(parent: Control, size: int) -> Label:
 	return label
 
 
-func set_ammo(ammo: int, _max_ammo: int) -> void:
+func set_ammo(ammo: int, max_ammo: int) -> void:
+	if _ammo_icons.size() != max_ammo:
+		_build_ammo_icons(max_ammo)
 	for i in _ammo_icons.size():
 		_ammo_icons[i].modulate = Color(1, 1, 1, 1) if i < ammo else Color(0.25, 0.25, 0.3, 0.6)
+
+
+func _build_ammo_icons(count: int) -> void:
+	for icon in _ammo_icons:
+		icon.queue_free()
+	_ammo_icons.clear()
+	var bullet_icon := AtlasTexture.new()
+	bullet_icon.atlas = load(SpriteSheets.GUNS + "bullet.png")
+	bullet_icon.region = Rect2(22, 2, 22, 12)
+	for i in count:
+		var icon := TextureRect.new()
+		icon.texture = bullet_icon
+		icon.custom_minimum_size = Vector2(44, 24) if count <= 4 else Vector2(30, 16)
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		_ammo_box.add_child(icon)
+		_ammo_icons.append(icon)
 
 
 func set_time(seconds: float) -> void:
@@ -88,7 +97,7 @@ func set_coins(collected: int, total: int) -> void:
 	_coin_label.text = "Coins %d/%d" % [collected, total]
 
 
-func show_win(seconds: float, shots: int, splashes: int) -> void:
+func show_win(seconds: float, shots: int, splashes: int, coins_earned := 0, coins_total := 0) -> void:
 	_hint.visible = false
 	_win.visible = true
-	_win.text = "SAFEZONE REACHED!\n\n%.1f seconds   ·   %d shots   ·   %d splashes\n\nPress R to play again" % [seconds, shots, splashes]
+	_win.text = "SAFEZONE REACHED!\n\n%.1f seconds   ·   %d shots   ·   %d splashes\n\n+%d coins   (you have %d)\n\nR play again   ·   Esc menu" % [seconds, shots, splashes, coins_earned, coins_total]

@@ -3,287 +3,52 @@
 [ext_resource type="Script" path="res://ui/game_menu.gd" id="1_menu"]
 [ext_resource type="FontFile" path="res://ui/fonts/Silkscreen-Regular.ttf" id="2_font"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_levels"]
-
-[sub_resource type="World2D" id="World2D_preview"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_row"]
+[sub_resource type="StyleBoxFlat" id="StyleBox_back"]
 content_margin_left = 14.0
 content_margin_right = 14.0
-bg_color = Color(0.105, 0.145, 0.20, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.22, 0.30, 0.36, 1)
-anti_aliasing = false
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_row_hover"]
-content_margin_left = 14.0
-content_margin_right = 14.0
-bg_color = Color(0.155, 0.22, 0.28, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.38, 0.51, 0.55, 1)
-anti_aliasing = false
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_selected"]
-content_margin_left = 14.0
-content_margin_right = 14.0
-bg_color = Color(0.17, 0.24, 0.23, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.73, 0.91, 0.38, 1)
-anti_aliasing = false
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_play"]
-content_margin_left = 14.0
-content_margin_right = 14.0
-bg_color = Color(0.76, 0.92, 0.39, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
+bg_color = Color(0.23, 0.165, 0.15, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
 border_width_bottom = 5
-border_color = Color(0.41, 0.56, 0.20, 1)
+border_color = Color(0.1, 0.11, 0.17, 1)
 anti_aliasing = false
 
-[sub_resource type="StyleBoxFlat" id="StyleBox_play_hover"]
+[sub_resource type="StyleBoxFlat" id="StyleBox_back_hover"]
 content_margin_left = 14.0
 content_margin_right = 14.0
-bg_color = Color(0.87, 0.97, 0.55, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
+bg_color = Color(0.42, 0.29, 0.23, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
 border_width_bottom = 5
-border_color = Color(0.41, 0.56, 0.20, 1)
+border_color = Color(0.1, 0.11, 0.17, 1)
 anti_aliasing = false
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_play_pressed"]
-content_margin_left = 14.0
-content_margin_right = 14.0
-bg_color = Color(0.63, 0.81, 0.31, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.42, 0.55, 0.22, 1)
-anti_aliasing = false
-
-[sub_resource type="StyleBoxFlat" id="StyleBox_focus"]
-content_margin_left = 14.0
-content_margin_right = 14.0
-bg_color = Color(0, 0, 0, 0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 0.89, 0.56, 1)
-anti_aliasing = false
-draw_center = false
-expand_margin_left = 3.0
-expand_margin_top = 3.0
-expand_margin_right = 3.0
-expand_margin_bottom = 3.0
 
 [sub_resource type="Theme" id="Theme_menu"]
 default_font = ExtResource("2_font")
 default_font_size = 18
 Label/colors/font_color = Color(0.99, 0.96, 0.83, 1)
-Button/colors/font_color = Color(0.96, 0.96, 0.85, 1)
-Button/styles/normal = SubResource("StyleBox_row")
-Button/styles/hover = SubResource("StyleBox_row_hover")
-Button/styles/pressed = SubResource("StyleBox_selected")
-Button/styles/hover_pressed = SubResource("StyleBox_selected")
-Button/styles/focus = SubResource("StyleBox_focus")
+Button/colors/font_color = Color(1, 0.82, 0.25, 1)
+Button/colors/font_hover_color = Color(1, 0.9, 0.5, 1)
+Button/styles/normal = SubResource("StyleBox_back")
+Button/styles/hover = SubResource("StyleBox_back_hover")
+Button/styles/pressed = SubResource("StyleBox_back")
+Button/styles/focus = SubResource("StyleBox_back_hover")
 
 [node name="Main" type="Node"]
 script = ExtResource("1_menu")
 
-[node name="Menu" type="Control" parent="."]
+[node name="UI" type="Control" parent="."]
+texture_filter = 1
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme = SubResource("Theme_menu")
-
-[node name="Backdrop" type="ColorRect" parent="Menu"]
-layout_mode = 0
-offset_right = 1152.0
-offset_bottom = 648.0
-mouse_filter = 2
-color = Color(0.067, 0.098, 0.145, 1)
-
-[node name="PreviewHeading" type="Label" parent="Menu"]
-layout_mode = 0
-offset_left = 546.0
-offset_top = 129.0
-offset_right = 1122.0
-offset_bottom = 153.0
-theme_override_colors/font_color = Color(0.73, 0.91, 0.38, 1)
-theme_override_font_sizes/font_size = 16
-text = "Streckenvorschau"
-
-[node name="PreviewBorder" type="ColorRect" parent="Menu"]
-layout_mode = 0
-offset_left = 544.0
-offset_top = 162.0
-offset_right = 1124.0
-offset_bottom = 490.0
-mouse_filter = 2
-color = Color(0.22, 0.30, 0.36, 1)
-
-[node name="LevelPreview" type="SubViewportContainer" parent="Menu"]
-texture_filter = 1
-layout_mode = 0
-offset_left = 546.0
-offset_top = 164.0
-offset_right = 1122.0
-offset_bottom = 488.0
-mouse_filter = 2
-stretch = true
-
-[node name="Viewport" type="SubViewport" parent="Menu/LevelPreview"]
-unique_name_in_owner = true
-disable_3d = true
-world_2d = SubResource("World2D_preview")
-gui_disable_input = true
-size = Vector2i(576, 324)
-
-[node name="Camera2D" type="Camera2D" parent="Menu/LevelPreview/Viewport"]
-position = Vector2(320, 174)
-zoom = Vector2(0.9, 0.9)
-
-[node name="LandscapeEdge" type="ColorRect" parent="Menu"]
-layout_mode = 0
-offset_left = 512.0
-offset_right = 516.0
-offset_bottom = 648.0
-mouse_filter = 2
-color = Color(0.73, 0.91, 0.38, 1)
-
-[node name="Title" type="Label" parent="Menu"]
-layout_mode = 0
-offset_left = 48.0
-offset_top = 39.0
-offset_right = 472.0
-offset_bottom = 181.0
-theme_override_colors/font_color = Color(0.99, 0.96, 0.83, 1)
-theme_override_constants/line_spacing = -8
-theme_override_font_sizes/font_size = 62
-text = "BOUNCY
-BULLET"
-
-[node name="Section" type="Label" parent="Menu"]
-layout_mode = 0
-offset_left = 50.0
-offset_top = 219.0
-offset_right = 462.0
-offset_bottom = 243.0
-theme_override_colors/font_color = Color(0.73, 0.91, 0.38, 1)
-theme_override_font_sizes/font_size = 16
-text = "Level auswählen"
-
-[node name="Levels" type="VBoxContainer" parent="Menu"]
-layout_mode = 0
-offset_left = 48.0
-offset_top = 255.0
-offset_right = 464.0
-theme_override_constants/separation = 8
-
-[node name="Grassland" type="Button" parent="Menu/Levels"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 62)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_levels")
-text = "GrassLand"
-alignment = 0
-button_pressed = true
-
-[node name="Difficulty" type="Label" parent="Menu/Levels/Grassland"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 180.0
-offset_right = -15.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.76, 0.84, 0.76, 1)
-theme_override_font_sizes/font_size = 15
-text = "Leicht"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="RiverCrossing" type="Button" parent="Menu/Levels"]
-custom_minimum_size = Vector2(0, 62)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_levels")
-text = "Flusskette"
-alignment = 0
-
-[node name="Difficulty" type="Label" parent="Menu/Levels/RiverCrossing"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 180.0
-offset_right = -15.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.76, 0.84, 0.76, 1)
-theme_override_font_sizes/font_size = 15
-text = "Mittel"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="Highlands" type="Button" parent="Menu/Levels"]
-custom_minimum_size = Vector2(0, 62)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_levels")
-text = "Hochplateau"
-alignment = 0
-
-[node name="Difficulty" type="Label" parent="Menu/Levels/Highlands"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 180.0
-offset_right = -15.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.76, 0.84, 0.76, 1)
-theme_override_font_sizes/font_size = 15
-text = "Schwer"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="Play" type="Button" parent="Menu"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_left = 48.0
-offset_top = 492.0
-offset_right = 464.0
-offset_bottom = 554.0
-mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 24
-text = "Spielen"
-theme_override_colors/font_color = Color(0.08, 0.13, 0.10, 1)
-theme_override_colors/font_hover_color = Color(0.08, 0.13, 0.10, 1)
-theme_override_colors/font_pressed_color = Color(0.08, 0.13, 0.10, 1)
-theme_override_colors/font_focus_color = Color(0.08, 0.13, 0.10, 1)
-theme_override_styles/normal = SubResource("StyleBox_play")
-theme_override_styles/hover = SubResource("StyleBox_play_hover")
-theme_override_styles/pressed = SubResource("StyleBox_play_pressed")
 
 [node name="MenuHud" type="CanvasLayer" parent="."]
 layer = 2
@@ -297,7 +62,6 @@ offset_right = 290.0
 offset_bottom = 46.0
 mouse_default_cursor_shape = 2
 theme = SubResource("Theme_menu")
-text = "Menü"
+text = "MENU"
 
-[connection signal="pressed" from="Menu/Play" to="." method="_start_level"]
 [connection signal="pressed" from="MenuHud/Back" to="." method="_return_to_menu"]
