@@ -45,7 +45,7 @@ func _ready() -> void:
 	_hint.offset_top = -48
 	_hint.offset_bottom = -16
 	_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_hint.text = "A / D walk   ·   Click to shoot — the kick throws you the other way   ·   Shots refill on landing   ·   R restart   ·   Esc menu"
+	_hint.text = "A / D walk   ·   Hold click to shoot — the kick throws you the other way   ·   Shots refill on landing   ·   R restart   ·   Esc menu"
 
 	_win = _make_label(root, 34)
 	_win.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)

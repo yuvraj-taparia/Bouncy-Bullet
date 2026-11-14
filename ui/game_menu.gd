@@ -6,18 +6,18 @@ extends Node
 ## the rectangles below are in the picture's own pixels (1024 x 572).
 
 const LEVELS := [
-	["Wiesenland", "Wiesenpfad", "Leicht", preload("res://maps/campaign/meadow_path.tscn")],
-	["Wiesenland", "Hangwiese", "Mittel", preload("res://maps/campaign/hillside.tscn")],
-	["Wiesenland", "Nashornpass", "Schwer", preload("res://maps/campaign/rhino_pass.tscn")],
-	["Flussland", "Sandbank", "Leicht", preload("res://maps/campaign/sandbank.tscn")],
-	["Flussland", "Biberdamm", "Mittel", preload("res://maps/campaign/beaver_dam.tscn")],
-	["Flussland", "Stromschnellen", "Schwer", preload("res://maps/campaign/rapids.tscn")],
-	["Tiefenhöhle", "Grotte", "Leicht", preload("res://maps/campaign/grotto.tscn")],
-	["Tiefenhöhle", "Wurmtunnel", "Mittel", preload("res://maps/campaign/worm_tunnel.tscn")],
-	["Tiefenhöhle", "Tiefenschacht", "Schwer", preload("res://maps/campaign/deep_shaft.tscn")],
-	["Dschungelruinen", "Tempelgarten", "Leicht", preload("res://maps/campaign/temple_garden.tscn")],
-	["Dschungelruinen", "Rankenhallen", "Mittel", preload("res://maps/campaign/vine_halls.tscn")],
-	["Dschungelruinen", "Kronendach", "Schwer", preload("res://maps/campaign/canopy.tscn")],
+	["Meadowlands", "Meadow Path", "Easy", preload("res://maps/campaign/meadow_path.tscn")],
+	["Meadowlands", "Hillside", "Medium", preload("res://maps/campaign/hillside.tscn")],
+	["Meadowlands", "Rhino Pass", "Hard", preload("res://maps/campaign/rhino_pass.tscn")],
+	["Riverlands", "Sandbank", "Easy", preload("res://maps/campaign/sandbank.tscn")],
+	["Riverlands", "Beaver Dam", "Medium", preload("res://maps/campaign/beaver_dam.tscn")],
+	["Riverlands", "Rapids", "Hard", preload("res://maps/campaign/rapids.tscn")],
+	["Deep Caves", "Grotto", "Easy", preload("res://maps/campaign/grotto.tscn")],
+	["Deep Caves", "Worm Tunnel", "Medium", preload("res://maps/campaign/worm_tunnel.tscn")],
+	["Deep Caves", "Deep Shaft", "Hard", preload("res://maps/campaign/deep_shaft.tscn")],
+	["Jungle Ruins", "Temple Garden", "Easy", preload("res://maps/campaign/temple_garden.tscn")],
+	["Jungle Ruins", "Vine Halls", "Medium", preload("res://maps/campaign/vine_halls.tscn")],
+	["Jungle Ruins", "Canopy", "Hard", preload("res://maps/campaign/canopy.tscn")],
 ]
 const GAME := preload("res://game/game.tscn")
 
@@ -275,7 +275,7 @@ func _build_controls() -> void:
 	var rows := [
 		["A / D", "WALK"],
 		["MOUSE", "AIM THE GUN"],
-		["LEFT CLICK", "SHOOT - THE KICK THROWS YOU BACK"],
+		["LEFT CLICK", "SHOOT - HOLD FOR AUTO FIRE"],
 		["LAND", "RELOAD YOUR SHOTS"],
 		["R", "RESTART THE LEVEL"],
 		["ESC", "BACK TO THE MENU"],

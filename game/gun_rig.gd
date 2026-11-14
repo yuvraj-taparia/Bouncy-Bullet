@@ -89,7 +89,8 @@ func visual_center() -> Vector2:
 func shoot() -> void:
 	cancel_reload()
 	var h: Dictionary = data.handling
-	_recoil_mult = Vector3(randf_range(h.rot.x, h.rot.y), randf_range(h.x.x, h.x.y), randf_range(h.y.x, h.y.y))
+	# The on-screen gun kick (rotation, horizontal, vertical) is scaled down too.
+	_recoil_mult = Vector3(randf_range(h.rot.x, h.rot.y), randf_range(h.x.x, h.x.y), randf_range(h.y.x, h.y.y)) * Guns.RECOIL_SCALE
 	_recoil.stop()
 	_recoil.speed_scale = data.recoil_speed
 	_recoil.play(&"recoil")
@@ -149,6 +150,7 @@ func spawn_casing() -> void:
 		return
 	var casing: Sprite2D = CASING.instantiate()
 	casing.texture = _casing_texture
+	casing.gravity *= Player.GRAVITY_SCALE
 	casing.position = gun.casing.global_position   # set before entering the tree: its script reads it in _ready
 	casing.scale.x *= _facing()
 	casing.z_index = 2
@@ -161,6 +163,7 @@ func spawn_mag() -> void:
 		return
 	var mag: Sprite2D = DROP_MAG.instantiate()
 	mag.add_child(_mag_scene.instantiate())
+	mag.gravity *= Player.GRAVITY_SCALE
 	mag.position = gun.dropMag.global_position
 	mag.rotation = gun.dropMag.global_rotation
 	mag.scale.x *= _facing()

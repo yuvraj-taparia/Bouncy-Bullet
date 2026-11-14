@@ -4,7 +4,7 @@ extends RefCounted
 ## both read from this table.
 ##
 ## Gameplay
-##   recoil      how hard each shot throws you (pixels/second)
+##   recoil      how hard each shot throws you (pixels/second, before RECOIL_SCALE)
 ##   ammo        shots before you have to land
 ##   cooldown    seconds between shots
 ##   pellets     bullets per shot (spread over `spread` radians)
@@ -24,6 +24,11 @@ const SPRITES := "res://assets/pixel_art_guns/sprites/"
 const ORDER: Array[StringName] = [&"pistol", &"shotgun", &"bounce_rifle"]
 ## Every gun.
 const ALL: Array[StringName] = [&"glock", &"pistol", &"shotgun", &"bounce_rifle"]
+
+## Every gun's kick is multiplied by this (0.5 = half recoil, both the
+## horizontal and vertical push). The per-gun "recoil" values below keep
+## each gun's feel relative to the others.
+const RECOIL_SCALE := 0.5
 
 const DATA := {
 	&"pistol": {
