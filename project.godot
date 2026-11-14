@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="HavenGame"
+run/main_scene="uid://617oi6ib2b3p"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
