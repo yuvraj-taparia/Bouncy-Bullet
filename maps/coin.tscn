@@ -1,0 +1,29 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://maps/coin.gd" id="1_coin"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_pickup"]
+radius = 8.0
+
+[node name="Coin" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+script = ExtResource("1_coin")
+
+[node name="Rim" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-3, -8, 3, -8, 3, -6, 6, -6, 6, 6, 3, 6, 3, 8, -3, 8, -3, 6, -6, 6, -6, -6, -3, -6)
+color = Color(0.44, 0.22, 0.15, 1)
+
+[node name="Face" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-3, -6, 3, -6, 3, -4, 4, -4, 4, 4, 3, 4, 3, 6, -3, 6, -3, 4, -4, 4, -4, -4, -3, -4)
+color = Color(1, 0.71, 0.21, 1)
+
+[node name="Shine" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-2, -4, 0, -4, 0, 3, -2, 3)
+color = Color(1, 0.94, 0.59, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_pickup")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Flower_2.png" id="flower"]
 [ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Stone_2.png" id="stone"]
 [ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Entry_3.png" id="exit"]
+[ext_resource type="PackedScene" path="res://maps/coin.tscn" id="coin"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_safezone"]
 size = Vector2(28, 40)
@@ -159,3 +160,14 @@ monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FallZone"]
 shape = SubResource("RectangleShape2D_fall")
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Coins" instance=ExtResource("coin")]
+position = Vector2(109, 215)
+
+[node name="Coin2" parent="Coins" instance=ExtResource("coin")]
+position = Vector2(194, 168)
+
+[node name="Coin3" parent="Coins" instance=ExtResource("coin")]
+position = Vector2(380, 215)

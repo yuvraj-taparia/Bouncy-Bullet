@@ -43,3 +43,12 @@ offset_bottom = 183.0
 
 [node name="Safezone" parent="." index="6"]
 position = Vector2(566, 204)
+
+[node name="Coin1" parent="Coins" index="0"]
+position = Vector2(127, 215)
+
+[node name="Coin2" parent="Coins" index="1"]
+position = Vector2(328, 152)
+
+[node name="Coin3" parent="Coins" index="2"]
+position = Vector2(522, 199)
