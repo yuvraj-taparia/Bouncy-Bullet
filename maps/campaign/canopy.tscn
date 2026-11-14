@@ -1,0 +1,209 @@
+[gd_scene format=3]
+
+[ext_resource type="TileSet" path="res://maps/campaign/ruins_terrain.tres" id="1_terrain"]
+[ext_resource type="PackedScene" path="res://maps/campaign/ruins_backdrop.tscn" id="2_backdrop"]
+[ext_resource type="PackedScene" path="res://maps/coin.tscn" id="3_coin"]
+[ext_resource type="Texture2D" path="res://assets/chequered_ink_platformer/jungle_tile_set.png" id="4_art"]
+[ext_resource type="PackedScene" path="res://game/mob.tscn" id="5_mob"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Entry_3.png" id="6_portal"]
+
+[ext_resource type="PackedScene" path="res://game/timed_spikes.tscn" id="7_spikes"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ledge"]
+size = Vector2(64, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_safezone"]
+size = Vector2(28, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fall"]
+size = Vector2(2288, 768)
+
+[sub_resource type="RectangleShape2D" id="MobShape_0"]
+size = Vector2(20, 11)
+
+[sub_resource type="RectangleShape2D" id="MobShape_1"]
+size = Vector2(14, 9)
+
+[sub_resource type="RectangleShape2D" id="MobShape_2"]
+size = Vector2(20, 11)
+
+[node name="Canopy" type="Node2D"]
+texture_filter = 1
+
+[node name="Backdrop" parent="." instance=ExtResource("2_backdrop")]
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAACABEAAAAAAAEAAAADABEAAAABAAEAAAAEABEAAAABAAEAAAAFABEAAAABAAEAAAAGABEAAAABAAEAAAAHABEAAAABAAEAAAAIABEAAAABAAEAAAAJABEAAAABAAEAAAAKABEAAAABAAEAAAALABEAAAABAAEAAAAMABEAAAACAAEAAAACABIAAAAAAAIAAAADABIAAAABAAIAAAAEABIAAAABAAIAAAAFABIAAAABAAIAAAAGABIAAAABAAIAAAAHABIAAAABAAIAAAAIABIAAAABAAIAAAAJABIAAAABAAIAAAAKABIAAAABAAIAAAALABIAAAABAAIAAAAMABIAAAACAAIAAAACABMAAAAAAAMAAAADABMAAAABAAMAAAAEABMAAAABAAMAAAAFABMAAAABAAMAAAAGABMAAAABAAMAAAAHABMAAAABAAMAAAAIABMAAAABAAMAAAAJABMAAAABAAMAAAAKABMAAAABAAMAAAALABMAAAABAAMAAAAMABMAAAACAAMAAAATAA8AAAAAAAEAAAAUAA8AAAABAAEAAAAVAA8AAAABAAEAAAAWAA8AAAABAAEAAAAXAA8AAAACAAEAAAATABAAAAAAAAIAAAAUABAAAAABAAIAAAAVABAAAAABAAIAAAAWABAAAAABAAIAAAAXABAAAAACAAIAAAATABEAAAAAAAMAAAAUABEAAAABAAMAAAAVABEAAAABAAMAAAAWABEAAAABAAMAAAAXABEAAAACAAMAAAAeAA0AAAAAAAEAAAAfAA0AAAABAAEAAAAgAA0AAAABAAEAAAAhAA0AAAABAAEAAAAiAA0AAAACAAEAAAAeAA4AAAAAAAIAAAAfAA4AAAABAAIAAAAgAA4AAAABAAIAAAAhAA4AAAABAAIAAAAiAA4AAAACAAIAAAAeAA8AAAAAAAMAAAAfAA8AAAABAAMAAAAgAA8AAAABAAMAAAAhAA8AAAABAAMAAAAiAA8AAAACAAMAAAApAA4AAAAAAAEAAAAqAA4AAAABAAEAAAArAA4AAAABAAEAAAAsAA4AAAABAAEAAAAtAA4AAAACAAEAAAApAA8AAAAAAAIAAAAqAA8AAAABAAIAAAArAA8AAAABAAIAAAAsAA8AAAABAAIAAAAtAA8AAAACAAIAAAApABAAAAAAAAMAAAAqABAAAAABAAMAAAArABAAAAABAAMAAAAsABAAAAABAAMAAAAtABAAAAACAAMAAAA0AAwAAAAAAAEAAAA1AAwAAAABAAEAAAA2AAwAAAABAAEAAAA3AAwAAAABAAEAAAA4AAwAAAACAAEAAAA0AA0AAAAAAAIAAAA1AA0AAAABAAIAAAA2AA0AAAABAAIAAAA3AA0AAAABAAIAAAA4AA0AAAACAAIAAAA0AA4AAAAAAAMAAAA1AA4AAAABAAMAAAA2AA4AAAABAAMAAAA3AA4AAAABAAMAAAA4AA4AAAACAAMAAAA+AA0AAAAAAAEAAAA/AA0AAAABAAEAAABAAA0AAAABAAEAAABBAA0AAAABAAEAAABCAA0AAAABAAEAAABDAA0AAAABAAEAAABEAA0AAAABAAEAAABFAA0AAAABAAEAAABGAA0AAAACAAEAAAA+AA4AAAAAAAIAAAA/AA4AAAABAAIAAABAAA4AAAABAAIAAABBAA4AAAABAAIAAABCAA4AAAABAAIAAABDAA4AAAABAAIAAABEAA4AAAABAAIAAABFAA4AAAABAAIAAABGAA4AAAACAAIAAAA+AA8AAAAAAAMAAAA/AA8AAAABAAMAAABAAA8AAAABAAMAAABBAA8AAAABAAMAAABCAA8AAAABAAMAAABDAA8AAAABAAMAAABEAA8AAAABAAMAAABFAA8AAAABAAMAAABGAA8AAAACAAMAAAA=")
+tile_set = ExtResource("1_terrain")
+
+[node name="Pool" type="Polygon2D" parent="."]
+z_index = -1
+color = Color(0.15, 0.25, 0.32, 1)
+polygon = PackedVector2Array(-900, 352, 2036, 352, 2036, 840, -900, 840)
+
+[node name="UpperRoute" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAGAA4AAAAAAAEAAAAHAA4AAAABAAEAAAAIAA4AAAABAAEAAAAJAA4AAAACAAEAAAAOAAsAAAAAAAEAAAAPAAsAAAABAAEAAAAQAAsAAAABAAEAAAARAAsAAAACAAEAAAAWAAgAAAAAAAEAAAAXAAgAAAABAAEAAAAYAAgAAAABAAEAAAAZAAgAAAACAAEAAAAfAAcAAAAAAAEAAAAgAAcAAAABAAEAAAAhAAcAAAABAAEAAAAiAAcAAAACAAEAAAA=")
+tile_set = ExtResource("1_terrain")
+collision_enabled = false
+
+[node name="Ledge1" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(128, 228)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge1"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge2" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(256, 180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge2"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge3" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(384, 132)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge3"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge4" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(528, 116)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge4"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Spikes1" parent="Hazards" instance=ExtResource("7_spikes")]
+position = Vector2(344, 240)
+cycle_offset = 0.1
+
+[node name="Spikes2" parent="Hazards" instance=ExtResource("7_spikes")]
+position = Vector2(536, 208)
+cycle_offset = 1.55
+
+[node name="Exit" type="Sprite2D" parent="."]
+position = Vector2(1096, 176)
+texture = ExtResource("6_portal")
+centered = false
+
+[node name="SafezoneSign" type="Label" parent="."]
+offset_left = 1054.0
+offset_top = 148.0
+offset_right = 1154.0
+offset_bottom = 170.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.97, 0.84, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.13, 0.23, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
+text = "SAFEZONE"
+horizontal_alignment = 1
+
+[node name="PlayerSpawn" type="Marker2D" parent="."]
+position = Vector2(72, 256)
+
+[node name="Safezone" type="Area2D" parent="."]
+position = Vector2(1104, 188)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Safezone"]
+shape = SubResource("RectangleShape2D_safezone")
+
+[node name="FallZone" type="Area2D" parent="."]
+position = Vector2(568, 768)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FallZone"]
+shape = SubResource("RectangleShape2D_fall")
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(119, 254)
+
+[node name="Coin2" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(256, 157)
+
+[node name="Coin3" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(1080, 190)
+
+[node name="Mobs" type="Node2D" parent="."]
+
+[node name="Bat1" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(528, 164)
+animation_path = "res://assets/hunter_art_mobs/volants/bat.tres"
+patrol = Vector2(30, 8)
+patrol_speed = 3.2
+hit_points = 2
+
+[node name="Dragonfly2" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(712, 176)
+animation_path = "res://assets/hunter_art_mobs/volants/dragonfly.tres"
+patrol = Vector2(25, 8)
+patrol_speed = 3.2
+
+[node name="Bat3" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(888, 140)
+animation_path = "res://assets/hunter_art_mobs/volants/bat.tres"
+patrol = Vector2(30, 8)
+patrol_speed = 3.2
+
+[node name="Decoration" type="Node2D" parent="."]
+
+[node name="Prop1" type="Sprite2D" parent="Decoration"]
+position = Vector2(38, 256)
+texture = ExtResource("4_art")
+centered = false
+region_enabled = true
+region_rect = Rect2(16, 0, 16, 16)
+
+[node name="Prop2" type="Sprite2D" parent="Decoration"]
+position = Vector2(310, 224)
+texture = ExtResource("4_art")
+centered = false
+region_enabled = true
+region_rect = Rect2(64, 96, 16, 16)
+
+[node name="Prop3" type="Sprite2D" parent="Decoration"]
+position = Vector2(998, 192)
+texture = ExtResource("4_art")
+centered = false
+region_enabled = true
+region_rect = Rect2(80, 80, 16, 16)
+
+[node name="Sprite" parent="Mobs/Bat1" index="0"]
+position = Vector2(-26.68, -28.52)
+scale = Vector2(0.46, 0.46)
+
+[node name="CollisionShape2D" parent="Mobs/Bat1" index="1"]
+position = Vector2(0, -7.5)
+shape = SubResource("MobShape_0")
+
+[node name="Sprite" parent="Mobs/Dragonfly2" index="0"]
+position = Vector2(-19.20, -29.28)
+scale = Vector2(0.48, 0.48)
+
+[node name="CollisionShape2D" parent="Mobs/Dragonfly2" index="1"]
+position = Vector2(0, -6)
+shape = SubResource("MobShape_1")
+
+[node name="Sprite" parent="Mobs/Bat3" index="0"]
+position = Vector2(-24.94, -26.66)
+scale = Vector2(0.43, 0.43)
+
+[node name="CollisionShape2D" parent="Mobs/Bat3" index="1"]
+position = Vector2(0, -7.5)
+shape = SubResource("MobShape_2")
+
+[editable path="Mobs/Bat1"]
+
+[editable path="Mobs/Dragonfly2"]
+
+[editable path="Mobs/Bat3"]

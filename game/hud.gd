@@ -100,4 +100,7 @@ func set_coins(collected: int, total: int) -> void:
 func show_win(seconds: float, shots: int, splashes: int, coins_earned := 0, coins_total := 0) -> void:
 	_hint.visible = false
 	_win.visible = true
-	_win.text = "SAFEZONE REACHED!\n\n%.1f seconds   ·   %d shots   ·   %d splashes\n\n+%d coins   (you have %d)\n\nR play again   ·   Esc menu" % [seconds, shots, splashes, coins_earned, coins_total]
+	var reward := "+%d coins   (you have %d)" % [coins_earned, coins_total]
+	if coins_earned < 0:
+		reward = "Coin balance could not be saved"
+	_win.text = "SAFEZONE REACHED!\n\n%.1f seconds   ·   %d shots   ·   %d splashes\n\n%s\n\nR play again   ·   Esc menu" % [seconds, shots, splashes, reward]

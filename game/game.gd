@@ -5,8 +5,6 @@ extends Node2D
 signal restart_requested
 
 @export var level_scene: PackedScene
-## Position in the level list (0 = level 1); used to remember cleared levels.
-@export var level_index := 0
 
 var level: Node2D
 @onready var player: Player = $Player
@@ -25,12 +23,19 @@ func _ready() -> void:
 	add_child(level)
 	move_child(level, 0)
 	player.global_position = _spawn_point()
+	var terrain: TileMapLayer = level.get_node("Terrain")
+	player.camera.limit_right = terrain.get_used_rect().end.x * terrain.tile_set.tile_size.x + 76
 	player.camera.reset_smoothing()
 	player.ammo_changed.connect(hud.set_ammo)
 	player.fired.connect(func(): _shots += 1)
 	hud.set_ammo(player.ammo, player.max_ammo)
 	level.get_node("Safezone").body_entered.connect(_on_safezone_entered)
 	level.get_node("FallZone").body_entered.connect(_on_fall_zone_entered)
+	for group_name in ["Mobs", "Hazards"]:
+		var group := level.get_node_or_null(group_name)
+		if group != null:
+			for obstacle in group.get_children():
+				obstacle.player_touched.connect(_on_obstacle_touched)
 	var coins := level.get_node("Coins").get_children()
 	_coins_total = coins.size()
 	for coin in coins:
@@ -62,6 +67,11 @@ func _spawn_point() -> Vector2:
 	return level.get_node("PlayerSpawn").global_position
 
 
+func _on_obstacle_touched(body: Node2D) -> void:
+	if body == player and not _won:
+		player.respawn.call_deferred(_spawn_point())
+
+
 func _on_fall_zone_entered(body: Node2D) -> void:
 	if body != player or _won:
 		return
@@ -76,5 +86,9 @@ func _on_safezone_entered(body: Node2D) -> void:
 		return
 	_won = true
 	player.frozen = true
-	var earned := SaveData.finish_level(level_index, _coins_collected)
+	_finish_run.call_deferred()
+
+
+func _finish_run() -> void:
+	var earned := SaveData.finish_level(level_scene.resource_path, _coins_collected)
 	hud.show_win(_time, _shots, _splashes, earned, SaveData.coins)

@@ -5,15 +5,19 @@ extends Node
 ## (PopButton) sit exactly on top of the buttons painted in the picture, so
 ## the rectangles below are in the picture's own pixels (1024 x 572).
 
-const LEVELS: Array[PackedScene] = [
-	preload("res://maps/grassland/grassland.tscn"),
-	preload("res://maps/river_crossing/river_crossing.tscn"),
-	preload("res://maps/highlands/highlands.tscn"),
-]
-const LEVEL_INFO := [
-	["GRASSLAND", "EASY"],
-	["RIVER CROSSING", "MEDIUM"],
-	["HIGHLANDS", "HARD"],
+const LEVELS := [
+	["Wiesenland", "Wiesenpfad", "Leicht", preload("res://maps/campaign/meadow_path.tscn")],
+	["Wiesenland", "Hangwiese", "Mittel", preload("res://maps/campaign/hillside.tscn")],
+	["Wiesenland", "Nashornpass", "Schwer", preload("res://maps/campaign/rhino_pass.tscn")],
+	["Flussland", "Sandbank", "Leicht", preload("res://maps/campaign/sandbank.tscn")],
+	["Flussland", "Biberdamm", "Mittel", preload("res://maps/campaign/beaver_dam.tscn")],
+	["Flussland", "Stromschnellen", "Schwer", preload("res://maps/campaign/rapids.tscn")],
+	["Tiefenhöhle", "Grotte", "Leicht", preload("res://maps/campaign/grotto.tscn")],
+	["Tiefenhöhle", "Wurmtunnel", "Mittel", preload("res://maps/campaign/worm_tunnel.tscn")],
+	["Tiefenhöhle", "Tiefenschacht", "Schwer", preload("res://maps/campaign/deep_shaft.tscn")],
+	["Dschungelruinen", "Tempelgarten", "Leicht", preload("res://maps/campaign/temple_garden.tscn")],
+	["Dschungelruinen", "Rankenhallen", "Mittel", preload("res://maps/campaign/vine_halls.tscn")],
+	["Dschungelruinen", "Kronendach", "Schwer", preload("res://maps/campaign/canopy.tscn")],
 ]
 const GAME := preload("res://game/game.tscn")
 
@@ -49,6 +53,9 @@ var _flash: ColorRect
 var _coins: CoinCounter
 var _level_tiles: Array[PopButton] = []
 var _level_info: Label
+var _preview_viewport: SubViewport
+var _preview_camera: Camera2D
+var _level_preview: Node2D
 var _shop_buttons: Array[PopButton] = []
 var _shop_rigs: Array[GunRig] = []
 var _shop_info: Label
@@ -140,11 +147,11 @@ func _build_level_select() -> void:
 			var tile := _add_button(stage, LEVELS_IMG, Rect2(Vector2(TILE_X[col], TILE_Y[row]), TILE_SIZE), _on_level_pressed.bind(i))
 			tile.show_arrow = false
 			tile.sparkle_count = 3
-			tile.locked = i >= LEVELS.size()
 			tile.focus_entered.connect(_show_level_info.bind(i))
 			_level_tiles.append(tile)
 	var back := _add_button(stage, LEVELS_IMG, LEVELS_BACK, _show.bind("main"))
 	back.focus_entered.connect(func(): _level_info.text = "")
+	_build_level_preview(stage)
 
 	_level_info = PixelArt.label("", 15)
 	_level_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -152,6 +159,31 @@ func _build_level_select() -> void:
 	_level_info.size = Vector2(500, 26)
 	stage.add_child(_level_info)
 	_focus_default["levels"] = _level_tiles[0]
+
+
+func _build_level_preview(stage: Control) -> void:
+	var frame := ColorRect.new()
+	frame.position = Vector2(768, 185)
+	frame.size = Vector2(240, 152)
+	frame.color = PixelArt.INK
+	frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stage.add_child(frame)
+
+	var container := SubViewportContainer.new()
+	container.position = Vector2(3, 3)
+	container.size = frame.size - Vector2(6, 6)
+	container.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(container)
+
+	_preview_viewport = SubViewport.new()
+	_preview_viewport.size = Vector2i(container.size)
+	_preview_viewport.disable_3d = true
+	_preview_viewport.gui_disable_input = true
+	_preview_viewport.world_2d = World2D.new()
+	container.add_child(_preview_viewport)
+	_preview_camera = Camera2D.new()
+	_preview_viewport.add_child(_preview_camera)
 
 
 func _build_shop() -> void:
@@ -349,29 +381,47 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _refresh_levels() -> void:
 	for i in _level_tiles.size():
-		_level_tiles[i].badge_check = SaveData.cleared.has(i)
+		var scene: PackedScene = LEVELS[i][3]
+		_level_tiles[i].badge_check = SaveData.cleared.has(scene.resource_path)
 		_level_tiles[i].queue_redraw()
 
 
 func _show_level_info(i: int) -> void:
-	if i < LEVEL_INFO.size():
-		var done := "   ·   CLEARED" if SaveData.cleared.has(i) else ""
-		_level_info.text = "%d  ·  %s  ·  %s%s" % [i + 1, LEVEL_INFO[i][0], LEVEL_INFO[i][1], done]
-	else:
-		_level_info.text = "LEVEL %d  ·  COMING SOON" % (i + 1)
+	var entry: Array = LEVELS[i]
+	var scene: PackedScene = entry[3]
+	var done := "   ·   CLEARED" if SaveData.cleared.has(scene.resource_path) else ""
+	_level_info.text = "%s  ·  %s  ·  %s%s" % [entry[0], entry[1], entry[2], done]
+	if _level_preview != null:
+		if _level_preview.scene_file_path == scene.resource_path:
+			return
+		_preview_viewport.remove_child(_level_preview)
+		_level_preview.queue_free()
+
+	_level_preview = scene.instantiate()
+	_level_preview.process_mode = Node.PROCESS_MODE_DISABLED
+	_preview_viewport.add_child(_level_preview)
+
+	var terrain: TileMapLayer = _level_preview.get_node("Terrain")
+	var bounds := terrain.get_used_rect()
+	var upper: TileMapLayer = _level_preview.get_node_or_null("UpperRoute")
+	if upper != null:
+		bounds = bounds.merge(upper.get_used_rect())
+	var tile_size := terrain.tile_set.tile_size
+	var dimensions := Vector2(bounds.size * tile_size) + Vector2(64, 48)
+	var fit := Vector2(_preview_viewport.size) / dimensions
+	_preview_camera.position = Vector2(bounds.get_center() * tile_size)
+	_preview_camera.zoom = Vector2.ONE * minf(0.9, minf(fit.x, fit.y))
+	_preview_camera.force_update_scroll()
 
 
 func _on_level_pressed(i: int) -> void:
-	if i >= LEVELS.size():
-		return
 	_start_level(i)
 
 
 func _start_level(i: int) -> void:
 	_remove_game()  # never run two levels at once
 	active_game = GAME.instantiate()
-	active_game.level_scene = LEVELS[i]
-	active_game.level_index = i
+	active_game.level_scene = LEVELS[i][3]
 	active_game.restart_requested.connect(_restart_level.bind(i))
 	add_child(active_game)
 	ui.hide()
@@ -427,23 +477,23 @@ func _show_gun_info(i: int) -> void:
 func _on_shop_pressed(i: int) -> void:
 	var id: StringName = Guns.ORDER[i]
 	var b := _shop_buttons[i]
-	if SaveData.owns(id) and SaveData.equipped == id:
+	var owns_gun := SaveData.owns(id)
+	if owns_gun and SaveData.equipped == id and SaveData.equip(SaveData.STARTER):
 		# Clicking EQUIPPED puts the free starter Glock back in your hands.
-		SaveData.equip(SaveData.STARTER)
 		b.hop()
 		_float_text(screens["shop"], "USING GLOCK", b.position + Vector2(b.size.x * 0.5, -8), PixelArt.GOLD)
-	elif SaveData.owns(id):
-		SaveData.equip(id)
+	elif owns_gun and SaveData.equipped != id and SaveData.equip(id):
 		b.hop()
 		_shop_rigs[i].pickup()
-	elif SaveData.buy(id):
+	elif not owns_gun and SaveData.buy(id):
 		b.hop()
 		_shop_rigs[i].pickup()
 		_float_text(screens["shop"], "BOUGHT!", b.position + Vector2(b.size.x * 0.5, -8), Color("8ef07a"))
 	else:
 		b.shake()
 		var need: int = Guns.get_gun(id).price - SaveData.coins
-		_float_text(screens["shop"], "NEED %d MORE" % need, b.position + Vector2(b.size.x * 0.5, -8), Color("ff6b5a"))
+		var message := "NEED %d MORE" % need if not owns_gun and need > 0 else "COULD NOT SAVE"
+		_float_text(screens["shop"], message, b.position + Vector2(b.size.x * 0.5, -8), Color("ff6b5a"))
 	_refresh_shop()
 	_show_gun_info(i)
 

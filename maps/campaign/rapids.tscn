@@ -1,0 +1,349 @@
+[gd_scene format=3]
+
+[ext_resource type="TileSet" path="res://maps/campaign/river_terrain.tres" id="1_terrain"]
+[ext_resource type="PackedScene" path="res://maps/campaign/river_backdrop.tscn" id="2_backdrop"]
+[ext_resource type="PackedScene" path="res://maps/coin.tscn" id="3_coin"]
+[ext_resource type="Texture2D" path="res://assets/chequered_ink_platformer/beach_tile_set-1.png" id="4_art"]
+[ext_resource type="PackedScene" path="res://game/mob.tscn" id="5_mob"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Entry_3.png" id="6_portal"]
+
+[ext_resource type="PackedScene" path="res://game/timed_spikes.tscn" id="7_spikes"]
+
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_TallGrass_2.png" id="reed"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/Animated/GrassLand_WaterSurfaceAnim.png" id="waterline"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Trunk_Left.png" id="log"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Stone_3.png" id="rock"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ledge"]
+size = Vector2(64, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_safezone"]
+size = Vector2(28, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fall"]
+size = Vector2(2144, 768)
+
+[sub_resource type="RectangleShape2D" id="MobShape_0"]
+size = Vector2(19, 10)
+
+[sub_resource type="RectangleShape2D" id="MobShape_1"]
+size = Vector2(23, 10)
+
+[node name="Rapids" type="Node2D"]
+texture_filter = 1
+
+[node name="Backdrop" parent="." instance=ExtResource("2_backdrop")]
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+modulate = Color(0.83, 0.91, 0.84, 1)
+tile_map_data = PackedByteArray("AAACABEAAAAAAAEAAAADABEAAAABAAEAAAAEABEAAAABAAEAAAAFABEAAAABAAEAAAAGABEAAAABAAEAAAAHABEAAAABAAEAAAAIABEAAAABAAEAAAAJABEAAAABAAEAAAAKABEAAAABAAEAAAALABEAAAABAAEAAAAMABEAAAACAAEAAAACABIAAAAAAAIAAAADABIAAAABAAIAAAAEABIAAAABAAIAAAAFABIAAAABAAIAAAAGABIAAAABAAIAAAAHABIAAAABAAIAAAAIABIAAAABAAIAAAAJABIAAAABAAIAAAAKABIAAAABAAIAAAALABIAAAABAAIAAAAMABIAAAACAAIAAAACABMAAAAAAAIAAAADABMAAAABAAIAAAAEABMAAAABAAIAAAAFABMAAAABAAIAAAAGABMAAAABAAIAAAAHABMAAAABAAIAAAAIABMAAAABAAIAAAAJABMAAAABAAIAAAAKABMAAAABAAIAAAALABMAAAABAAIAAAAMABMAAAACAAIAAAACABQAAAAAAAIAAAADABQAAAABAAIAAAAEABQAAAABAAIAAAAFABQAAAABAAIAAAAGABQAAAABAAIAAAAHABQAAAABAAIAAAAIABQAAAABAAIAAAAJABQAAAABAAIAAAAKABQAAAABAAIAAAALABQAAAABAAIAAAAMABQAAAACAAIAAAACABUAAAAAAAIAAAADABUAAAABAAIAAAAEABUAAAABAAIAAAAFABUAAAABAAIAAAAGABUAAAABAAIAAAAHABUAAAABAAIAAAAIABUAAAABAAIAAAAJABUAAAABAAIAAAAKABUAAAABAAIAAAALABUAAAABAAIAAAAMABUAAAACAAIAAAACABYAAAAAAAIAAAADABYAAAABAAIAAAAEABYAAAABAAIAAAAFABYAAAABAAIAAAAGABYAAAABAAIAAAAHABYAAAABAAIAAAAIABYAAAABAAIAAAAJABYAAAABAAIAAAAKABYAAAABAAIAAAALABYAAAABAAIAAAAMABYAAAACAAIAAAACABcAAAAAAAIAAAADABcAAAABAAIAAAAEABcAAAABAAIAAAAFABcAAAABAAIAAAAGABcAAAABAAIAAAAHABcAAAABAAIAAAAIABcAAAABAAIAAAAJABcAAAABAAIAAAAKABcAAAABAAIAAAALABcAAAABAAIAAAAMABcAAAACAAIAAAACABgAAAAAAAMAAAADABgAAAABAAMAAAAEABgAAAABAAMAAAAFABgAAAABAAMAAAAGABgAAAABAAMAAAAHABgAAAABAAMAAAAIABgAAAABAAMAAAAJABgAAAABAAMAAAAKABgAAAABAAMAAAALABgAAAABAAMAAAAMABgAAAACAAMAAAATABAAAAAAAAEAAAAUABAAAAABAAEAAAAVABAAAAABAAEAAAAWABAAAAABAAEAAAAXABAAAAACAAEAAAATABEAAAAAAAIAAAAUABEAAAABAAIAAAAVABEAAAABAAIAAAAWABEAAAABAAIAAAAXABEAAAACAAIAAAATABIAAAAAAAIAAAAUABIAAAABAAIAAAAVABIAAAABAAIAAAAWABIAAAABAAIAAAAXABIAAAACAAIAAAATABMAAAAAAAIAAAAUABMAAAABAAIAAAAVABMAAAABAAIAAAAWABMAAAABAAIAAAAXABMAAAACAAIAAAATABQAAAAAAAIAAAAUABQAAAABAAIAAAAVABQAAAABAAIAAAAWABQAAAABAAIAAAAXABQAAAACAAIAAAATABUAAAAAAAIAAAAUABUAAAABAAIAAAAVABUAAAABAAIAAAAWABUAAAABAAIAAAAXABUAAAACAAIAAAATABYAAAAAAAIAAAAUABYAAAABAAIAAAAVABYAAAABAAIAAAAWABYAAAABAAIAAAAXABYAAAACAAIAAAATABcAAAAAAAIAAAAUABcAAAABAAIAAAAVABcAAAABAAIAAAAWABcAAAABAAIAAAAXABcAAAACAAIAAAATABgAAAAAAAMAAAAUABgAAAABAAMAAAAVABgAAAABAAMAAAAWABgAAAABAAMAAAAXABgAAAACAAMAAAAeAA4AAAAAAAEAAAAfAA4AAAABAAEAAAAgAA4AAAABAAEAAAAhAA4AAAABAAEAAAAiAA4AAAACAAEAAAAeAA8AAAAAAAIAAAAfAA8AAAABAAIAAAAgAA8AAAABAAIAAAAhAA8AAAABAAIAAAAiAA8AAAACAAIAAAAeABAAAAAAAAIAAAAfABAAAAABAAIAAAAgABAAAAABAAIAAAAhABAAAAABAAIAAAAiABAAAAACAAIAAAAeABEAAAAAAAIAAAAfABEAAAABAAIAAAAgABEAAAABAAIAAAAhABEAAAABAAIAAAAiABEAAAACAAIAAAAeABIAAAAAAAIAAAAfABIAAAABAAIAAAAgABIAAAABAAIAAAAhABIAAAABAAIAAAAiABIAAAACAAIAAAAeABMAAAAAAAIAAAAfABMAAAABAAIAAAAgABMAAAABAAIAAAAhABMAAAABAAIAAAAiABMAAAACAAIAAAAeABQAAAAAAAIAAAAfABQAAAABAAIAAAAgABQAAAABAAIAAAAhABQAAAABAAIAAAAiABQAAAACAAIAAAAeABUAAAAAAAIAAAAfABUAAAABAAIAAAAgABUAAAABAAIAAAAhABUAAAABAAIAAAAiABUAAAACAAIAAAAeABYAAAAAAAIAAAAfABYAAAABAAIAAAAgABYAAAABAAIAAAAhABYAAAABAAIAAAAiABYAAAACAAIAAAAeABcAAAAAAAIAAAAfABcAAAABAAIAAAAgABcAAAABAAIAAAAhABcAAAABAAIAAAAiABcAAAACAAIAAAAeABgAAAAAAAMAAAAfABgAAAABAAMAAAAgABgAAAABAAMAAAAhABgAAAABAAMAAAAiABgAAAACAAMAAAApABAAAAAAAAEAAAAqABAAAAABAAEAAAArABAAAAABAAEAAAAsABAAAAABAAEAAAAtABAAAAABAAEAAAAuABAAAAACAAEAAAApABEAAAAAAAIAAAAqABEAAAABAAIAAAArABEAAAABAAIAAAAsABEAAAABAAIAAAAtABEAAAABAAIAAAAuABEAAAACAAIAAAApABIAAAAAAAIAAAAqABIAAAABAAIAAAArABIAAAABAAIAAAAsABIAAAABAAIAAAAtABIAAAABAAIAAAAuABIAAAACAAIAAAApABMAAAAAAAIAAAAqABMAAAABAAIAAAArABMAAAABAAIAAAAsABMAAAABAAIAAAAtABMAAAABAAIAAAAuABMAAAACAAIAAAApABQAAAAAAAIAAAAqABQAAAABAAIAAAArABQAAAABAAIAAAAsABQAAAABAAIAAAAtABQAAAABAAIAAAAuABQAAAACAAIAAAApABUAAAAAAAIAAAAqABUAAAABAAIAAAArABUAAAABAAIAAAAsABUAAAABAAIAAAAtABUAAAABAAIAAAAuABUAAAACAAIAAAApABYAAAAAAAIAAAAqABYAAAABAAIAAAArABYAAAABAAIAAAAsABYAAAABAAIAAAAtABYAAAABAAIAAAAuABYAAAACAAIAAAApABcAAAAAAAIAAAAqABcAAAABAAIAAAArABcAAAABAAIAAAAsABcAAAABAAIAAAAtABcAAAABAAIAAAAuABcAAAACAAIAAAApABgAAAAAAAMAAAAqABgAAAABAAMAAAArABgAAAABAAMAAAAsABgAAAABAAMAAAAtABgAAAABAAMAAAAuABgAAAACAAMAAAA1AA8AAAAAAAEAAAA2AA8AAAABAAEAAAA3AA8AAAABAAEAAAA4AA8AAAABAAEAAAA5AA8AAAABAAEAAAA6AA8AAAABAAEAAAA7AA8AAAABAAEAAAA8AA8AAAABAAEAAAA9AA8AAAACAAEAAAA1ABAAAAAAAAIAAAA2ABAAAAABAAIAAAA3ABAAAAABAAIAAAA4ABAAAAABAAIAAAA5ABAAAAABAAIAAAA6ABAAAAABAAIAAAA7ABAAAAABAAIAAAA8ABAAAAABAAIAAAA9ABAAAAACAAIAAAA1ABEAAAAAAAIAAAA2ABEAAAABAAIAAAA3ABEAAAABAAIAAAA4ABEAAAABAAIAAAA5ABEAAAABAAIAAAA6ABEAAAABAAIAAAA7ABEAAAABAAIAAAA8ABEAAAABAAIAAAA9ABEAAAACAAIAAAA1ABIAAAAAAAIAAAA2ABIAAAABAAIAAAA3ABIAAAABAAIAAAA4ABIAAAABAAIAAAA5ABIAAAABAAIAAAA6ABIAAAABAAIAAAA7ABIAAAABAAIAAAA8ABIAAAABAAIAAAA9ABIAAAACAAIAAAA1ABMAAAAAAAIAAAA2ABMAAAABAAIAAAA3ABMAAAABAAIAAAA4ABMAAAABAAIAAAA5ABMAAAABAAIAAAA6ABMAAAABAAIAAAA7ABMAAAABAAIAAAA8ABMAAAABAAIAAAA9ABMAAAACAAIAAAA1ABQAAAAAAAIAAAA2ABQAAAABAAIAAAA3ABQAAAABAAIAAAA4ABQAAAABAAIAAAA5ABQAAAABAAIAAAA6ABQAAAABAAIAAAA7ABQAAAABAAIAAAA8ABQAAAABAAIAAAA9ABQAAAACAAIAAAA1ABUAAAAAAAIAAAA2ABUAAAABAAIAAAA3ABUAAAABAAIAAAA4ABUAAAABAAIAAAA5ABUAAAABAAIAAAA6ABUAAAABAAIAAAA7ABUAAAABAAIAAAA8ABUAAAABAAIAAAA9ABUAAAACAAIAAAA1ABYAAAAAAAIAAAA2ABYAAAABAAIAAAA3ABYAAAABAAIAAAA4ABYAAAABAAIAAAA5ABYAAAABAAIAAAA6ABYAAAABAAIAAAA7ABYAAAABAAIAAAA8ABYAAAABAAIAAAA9ABYAAAACAAIAAAA1ABcAAAAAAAIAAAA2ABcAAAABAAIAAAA3ABcAAAABAAIAAAA4ABcAAAABAAIAAAA5ABcAAAABAAIAAAA6ABcAAAABAAIAAAA7ABcAAAABAAIAAAA8ABcAAAABAAIAAAA9ABcAAAACAAIAAAA1ABgAAAAAAAMAAAA2ABgAAAABAAMAAAA3ABgAAAABAAMAAAA4ABgAAAABAAMAAAA5ABgAAAABAAMAAAA6ABgAAAABAAMAAAA7ABgAAAABAAMAAAA8ABgAAAABAAMAAAA9ABgAAAACAAMAAAA=")
+tile_set = ExtResource("1_terrain")
+
+[node name="Pool" type="Polygon2D" parent="."]
+z_index = -1
+color = Color(0.17, 0.45, 0.52, 1)
+polygon = PackedVector2Array(-900, 300, 1892, 300, 1892, 840, -900, 840)
+
+[node name="UpperRoute" type="TileMapLayer" parent="."]
+modulate = Color(0.83, 0.91, 0.84, 1)
+tile_map_data = PackedByteArray("AAAGAA4AAAAAAAEAAAAHAA4AAAABAAEAAAAIAA4AAAABAAEAAAAJAA4AAAACAAEAAAAOAAsAAAAAAAEAAAAPAAsAAAABAAEAAAAQAAsAAAABAAEAAAARAAsAAAACAAEAAAAVAAkAAAAAAAEAAAAWAAkAAAABAAEAAAAXAAkAAAABAAEAAAAYAAkAAAACAAEAAAAdAAkAAAAAAAEAAAAeAAkAAAABAAEAAAAfAAkAAAABAAEAAAAgAAkAAAACAAEAAAA=")
+tile_set = ExtResource("1_terrain")
+collision_enabled = false
+
+[node name="Ledge1" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(128, 228)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge1"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge2" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(256, 180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge2"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge3" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(368, 148)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge3"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge4" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(496, 148)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge4"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Spikes1" parent="Hazards" instance=ExtResource("7_spikes")]
+position = Vector2(344, 256)
+cycle_offset = 0.2
+
+[node name="Spikes2" parent="Hazards" instance=ExtResource("7_spikes")]
+position = Vector2(536, 224)
+cycle_offset = 1.65
+
+[node name="Exit" type="Sprite2D" parent="."]
+position = Vector2(952, 208)
+texture = ExtResource("6_portal")
+centered = false
+
+[node name="SafezoneSign" type="Label" parent="."]
+offset_left = 910.0
+offset_top = 180.0
+offset_right = 1010.0
+offset_bottom = 202.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.97, 0.84, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.13, 0.23, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
+text = "SAFEZONE"
+horizontal_alignment = 1
+
+[node name="PlayerSpawn" type="Marker2D" parent="."]
+position = Vector2(72, 256)
+
+[node name="Safezone" type="Area2D" parent="."]
+position = Vector2(960, 220)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Safezone"]
+shape = SubResource("RectangleShape2D_safezone")
+
+[node name="FallZone" type="Area2D" parent="."]
+position = Vector2(496, 768)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FallZone"]
+shape = SubResource("RectangleShape2D_fall")
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(119, 254)
+
+[node name="Coin2" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(256, 157)
+
+[node name="Coin3" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(936, 222)
+
+[node name="Mobs" type="Node2D" parent="."]
+
+[node name="Beaver1" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(352, 256)
+animation_path = "res://assets/hunter_art_mobs/riverside/beaver.tres"
+patrol = Vector2(10, 0)
+patrol_speed = 3.2
+hit_points = 2
+
+[node name="Frog2" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(718, 256)
+animation_path = "res://assets/hunter_art_mobs/riverside/frog.tres"
+patrol = Vector2(12, 0)
+patrol_speed = 3.2
+
+[node name="Decoration" type="Node2D" parent="."]
+
+[node name="BankReed0_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(48, 256)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed0_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(68, 256)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed0_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(153, 256)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed0_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(171, 256)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="ShoreDetail0" type="Sprite2D" parent="Decoration"]
+position = Vector2(110, 256)
+texture = ExtResource("rock")
+centered = false
+
+[node name="BankReed1_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(310, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed1_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(318, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed1_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(352, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed1_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(359, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed2_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(486, 208)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed2_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(494, 208)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed2_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(528, 208)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed2_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(535, 208)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed3_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(664, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed3_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(674, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed3_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(716, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed3_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(725, 240)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="ShoreDetail3" type="Sprite2D" parent="Decoration"]
+position = Vector2(694, 240)
+texture = ExtResource("log")
+centered = false
+
+[node name="BankReed4_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(860, 224)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed4_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(877, 224)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed4_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(945, 224)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="BankReed4_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(959, 224)
+texture = ExtResource("reed")
+centered = false
+modulate = Color(0.62, 0.86, 0.79, 1)
+
+[node name="ShoreDetail4" type="Sprite2D" parent="Decoration"]
+position = Vector2(910, 224)
+texture = ExtResource("rock")
+centered = false
+
+[node name="Ripple0" type="Sprite2D" parent="Decoration"]
+position = Vector2(208, 290)
+texture = ExtResource("waterline")
+centered = false
+modulate = Color(0.63, 0.90, 0.89, 1)
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 16)
+
+[node name="Ripple1" type="Sprite2D" parent="Decoration"]
+position = Vector2(384, 290)
+texture = ExtResource("waterline")
+centered = false
+modulate = Color(0.63, 0.90, 0.89, 1)
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 16)
+
+[node name="Ripple2" type="Sprite2D" parent="Decoration"]
+position = Vector2(560, 290)
+texture = ExtResource("waterline")
+centered = false
+modulate = Color(0.63, 0.90, 0.89, 1)
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 16)
+
+[node name="Ripple3" type="Sprite2D" parent="Decoration"]
+position = Vector2(752, 290)
+texture = ExtResource("waterline")
+centered = false
+modulate = Color(0.63, 0.90, 0.89, 1)
+region_enabled = true
+region_rect = Rect2(0, 0, 96, 16)
+
+[node name="Driftwood" type="Sprite2D" parent="Decoration"]
+position = Vector2(250, 287)
+texture = ExtResource("log")
+centered = false
+modulate = Color(0.62, 0.70, 0.65, 1)
+
+[node name="Sprite" parent="Mobs/Beaver1" index="0"]
+position = Vector2(-34.56, -34.56)
+scale = Vector2(0.54, 0.54)
+
+[node name="CollisionShape2D" parent="Mobs/Beaver1" index="1"]
+position = Vector2(0, -7)
+shape = SubResource("MobShape_0")
+
+[node name="Sprite" parent="Mobs/Frog2" index="0"]
+position = Vector2(-26.88, -26.88)
+scale = Vector2(0.42, 0.42)
+
+[node name="CollisionShape2D" parent="Mobs/Frog2" index="1"]
+position = Vector2(0, -7)
+shape = SubResource("MobShape_1")
+
+[editable path="Mobs/Beaver1"]
+
+[editable path="Mobs/Frog2"]

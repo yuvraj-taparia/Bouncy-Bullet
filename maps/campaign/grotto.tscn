@@ -1,0 +1,136 @@
+[gd_scene format=3]
+
+[ext_resource type="TileSet" path="res://maps/campaign/cave_terrain.tres" id="1_terrain"]
+[ext_resource type="PackedScene" path="res://maps/campaign/cave_backdrop.tscn" id="2_backdrop"]
+[ext_resource type="PackedScene" path="res://maps/coin.tscn" id="3_coin"]
+[ext_resource type="Texture2D" path="res://assets/chequered_ink_platformer/cave_tile_set.png" id="4_art"]
+[ext_resource type="PackedScene" path="res://game/mob.tscn" id="5_mob"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Entry_3.png" id="6_portal"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ledge"]
+size = Vector2(64, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_safezone"]
+size = Vector2(28, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fall"]
+size = Vector2(1824, 768)
+
+[sub_resource type="RectangleShape2D" id="MobShape_0"]
+size = Vector2(16, 10)
+
+[node name="Grotto" type="Node2D"]
+texture_filter = 1
+
+[node name="Backdrop" parent="." instance=ExtResource("2_backdrop")]
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAACABAAAAAAAAEAAAADABAAAAABAAEAAAAEABAAAAABAAEAAAAFABAAAAABAAEAAAAGABAAAAABAAEAAAAHABAAAAABAAEAAAAIABAAAAABAAEAAAAJABAAAAABAAEAAAAKABAAAAABAAEAAAALABAAAAABAAEAAAAMABAAAAABAAEAAAANABAAAAACAAEAAAACABEAAAAAAAIAAAADABEAAAABAAIAAAAEABEAAAABAAIAAAAFABEAAAABAAIAAAAGABEAAAABAAIAAAAHABEAAAABAAIAAAAIABEAAAABAAIAAAAJABEAAAABAAIAAAAKABEAAAABAAIAAAALABEAAAABAAIAAAAMABEAAAABAAIAAAANABEAAAACAAIAAAACABIAAAAAAAMAAAADABIAAAABAAMAAAAEABIAAAABAAMAAAAFABIAAAABAAMAAAAGABIAAAABAAMAAAAHABIAAAABAAMAAAAIABIAAAABAAMAAAAJABIAAAABAAMAAAAKABIAAAABAAMAAAALABIAAAABAAMAAAAMABIAAAABAAMAAAANABIAAAACAAMAAAASAA8AAAAAAAEAAAATAA8AAAABAAEAAAAUAA8AAAABAAEAAAAVAA8AAAABAAEAAAAWAA8AAAABAAEAAAAXAA8AAAABAAEAAAAYAA8AAAABAAEAAAAZAA8AAAABAAEAAAAaAA8AAAACAAEAAAASABAAAAAAAAIAAAATABAAAAABAAIAAAAUABAAAAABAAIAAAAVABAAAAABAAIAAAAWABAAAAABAAIAAAAXABAAAAABAAIAAAAYABAAAAABAAIAAAAZABAAAAABAAIAAAAaABAAAAACAAIAAAASABEAAAAAAAMAAAATABEAAAABAAMAAAAUABEAAAABAAMAAAAVABEAAAABAAMAAAAWABEAAAABAAMAAAAXABEAAAABAAMAAAAYABEAAAABAAMAAAAZABEAAAABAAMAAAAaABEAAAACAAMAAAAeAA4AAAAAAAEAAAAfAA4AAAABAAEAAAAgAA4AAAABAAEAAAAhAA4AAAABAAEAAAAiAA4AAAABAAEAAAAjAA4AAAABAAEAAAAkAA4AAAABAAEAAAAlAA4AAAABAAEAAAAmAA4AAAABAAEAAAAnAA4AAAABAAEAAAAoAA4AAAABAAEAAAApAA4AAAACAAEAAAAeAA8AAAAAAAIAAAAfAA8AAAABAAIAAAAgAA8AAAABAAIAAAAhAA8AAAABAAIAAAAiAA8AAAABAAIAAAAjAA8AAAABAAIAAAAkAA8AAAABAAIAAAAlAA8AAAABAAIAAAAmAA8AAAABAAIAAAAnAA8AAAABAAIAAAAoAA8AAAABAAIAAAApAA8AAAACAAIAAAAeABAAAAAAAAMAAAAfABAAAAABAAMAAAAgABAAAAABAAMAAAAhABAAAAABAAMAAAAiABAAAAABAAMAAAAjABAAAAABAAMAAAAkABAAAAABAAMAAAAlABAAAAABAAMAAAAmABAAAAABAAMAAAAnABAAAAABAAMAAAAoABAAAAABAAMAAAApABAAAAACAAMAAAA=")
+tile_set = ExtResource("1_terrain")
+
+[node name="Pool" type="Polygon2D" parent="."]
+z_index = -1
+color = Color(0.13, 0.18, 0.29, 1)
+polygon = PackedVector2Array(-900, 352, 1572, 352, 1572, 840, -900, 840)
+
+[node name="UpperRoute" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAAHAA0AAAAAAAEAAAAIAA0AAAABAAEAAAAJAA0AAAABAAEAAAAKAA0AAAACAAEAAAA=")
+tile_set = ExtResource("1_terrain")
+collision_enabled = false
+
+[node name="Ledge1" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(144, 212)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge1"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Exit" type="Sprite2D" parent="."]
+position = Vector2(632, 192)
+texture = ExtResource("6_portal")
+centered = false
+
+[node name="SafezoneSign" type="Label" parent="."]
+offset_left = 590.0
+offset_top = 164.0
+offset_right = 690.0
+offset_bottom = 186.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.97, 0.84, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.13, 0.23, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
+text = "SAFEZONE"
+horizontal_alignment = 1
+
+[node name="PlayerSpawn" type="Marker2D" parent="."]
+position = Vector2(72, 240)
+
+[node name="Safezone" type="Area2D" parent="."]
+position = Vector2(640, 204)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Safezone"]
+shape = SubResource("RectangleShape2D_safezone")
+
+[node name="FallZone" type="Area2D" parent="."]
+position = Vector2(336, 768)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FallZone"]
+shape = SubResource("RectangleShape2D_fall")
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(119, 238)
+
+[node name="Coin2" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(144, 189)
+
+[node name="Coin3" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(616, 206)
+
+[node name="Mobs" type="Node2D" parent="."]
+
+[node name="Molerat1" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(382, 240)
+animation_path = "res://assets/hunter_art_mobs/underground/molerat.tres"
+patrol = Vector2(12, 0)
+
+[node name="Decoration" type="Node2D" parent="."]
+
+[node name="Prop1" type="Sprite2D" parent="Decoration"]
+position = Vector2(38, 240)
+texture = ExtResource("4_art")
+centered = false
+region_enabled = true
+region_rect = Rect2(112, 0, 16, 16)
+
+[node name="Prop2" type="Sprite2D" parent="Decoration"]
+position = Vector2(294, 224)
+texture = ExtResource("4_art")
+centered = false
+region_enabled = true
+region_rect = Rect2(96, 48, 16, 16)
+
+[node name="Prop3" type="Sprite2D" parent="Decoration"]
+position = Vector2(486, 208)
+texture = ExtResource("4_art")
+centered = false
+region_enabled = true
+region_rect = Rect2(32, 0, 16, 16)
+
+[node name="Sprite" parent="Mobs/Molerat1" index="0"]
+position = Vector2(-24.00, -45.75)
+scale = Vector2(0.75, 0.75)
+
+[node name="CollisionShape2D" parent="Mobs/Molerat1" index="1"]
+position = Vector2(0, -7)
+shape = SubResource("MobShape_0")
+
+[editable path="Mobs/Molerat1"]

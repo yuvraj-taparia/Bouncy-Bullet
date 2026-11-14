@@ -55,13 +55,20 @@ func _physics_process(delta: float) -> void:
 	# the distance for this frame is used up.
 	for _step in 4:
 		var target := global_position + direction * remaining
-		var query := PhysicsRayQueryParameters2D.create(global_position, target, 1)
+		var query := PhysicsRayQueryParameters2D.create(global_position, target, 3)
+		query.collide_with_areas = true
 		if bounces == 0 and is_instance_valid(shooter):
 			query.exclude = [shooter.get_rid()]
 		var hit := space.intersect_ray(query)
 		if hit.is_empty():
 			global_position = target
 			break
+
+		if hit.collider.is_in_group(&"mob"):
+			hit.collider.hit()
+			_spark(hit.position, direction.angle() + PI)
+			queue_free()
+			return
 
 		if hit.collider == shooter:
 			shooter.hit_by_own_bullet(direction * KNOCKBACK)

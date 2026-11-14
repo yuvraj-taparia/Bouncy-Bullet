@@ -1,0 +1,291 @@
+[gd_scene format=3]
+
+[ext_resource type="TileSet" path="res://maps/campaign/meadow_terrain.tres" id="1_terrain"]
+[ext_resource type="PackedScene" path="res://maps/campaign/meadow_backdrop.tscn" id="2_backdrop"]
+[ext_resource type="PackedScene" path="res://maps/coin.tscn" id="3_coin"]
+[ext_resource type="Texture2D" path="res://assets/chequered_ink_platformer/grassland_tile_set.png" id="4_art"]
+[ext_resource type="PackedScene" path="res://game/mob.tscn" id="5_mob"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Entry_3.png" id="6_portal"]
+
+[ext_resource type="PackedScene" path="res://game/timed_spikes.tscn" id="7_spikes"]
+
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Tree.png" id="tree"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Flower_1.png" id="flower_1"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Flower_2.png" id="flower_2"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_Flower_3.png" id="flower_3"]
+[ext_resource type="Texture2D" path="res://assets/multi_platformer_tileset_free/GrassLand/Props/GrassLand_TallGrass_1.png" id="grass"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ledge"]
+size = Vector2(64, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_safezone"]
+size = Vector2(28, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fall"]
+size = Vector2(2096, 768)
+
+[sub_resource type="RectangleShape2D" id="MobShape_0"]
+size = Vector2(34, 12)
+
+[sub_resource type="RectangleShape2D" id="MobShape_1"]
+size = Vector2(12, 13)
+
+[node name="RhinoPass" type="Node2D"]
+texture_filter = 1
+
+[node name="Backdrop" parent="." instance=ExtResource("2_backdrop")]
+
+[node name="Terrain" type="TileMapLayer" parent="."]
+modulate = Color(0.91, 0.88, 0.70, 1)
+tile_map_data = PackedByteArray("AAACABAAAAAAAAEAAAADABAAAAABAAEAAAAEABAAAAABAAEAAAAFABAAAAABAAEAAAAGABAAAAABAAEAAAAHABAAAAABAAEAAAAIABAAAAABAAEAAAAJABAAAAABAAEAAAAKABAAAAABAAEAAAALABAAAAABAAEAAAAMABAAAAACAAEAAAACABEAAAAAAAIAAAADABEAAAABAAIAAAAEABEAAAABAAIAAAAFABEAAAABAAIAAAAGABEAAAABAAIAAAAHABEAAAABAAIAAAAIABEAAAABAAIAAAAJABEAAAABAAIAAAAKABEAAAABAAIAAAALABEAAAABAAIAAAAMABEAAAACAAIAAAACABIAAAAAAAIAAAADABIAAAABAAIAAAAEABIAAAABAAIAAAAFABIAAAABAAIAAAAGABIAAAABAAIAAAAHABIAAAABAAIAAAAIABIAAAABAAIAAAAJABIAAAABAAIAAAAKABIAAAABAAIAAAALABIAAAABAAIAAAAMABIAAAACAAIAAAACABMAAAAAAAIAAAADABMAAAABAAIAAAAEABMAAAABAAIAAAAFABMAAAABAAIAAAAGABMAAAABAAIAAAAHABMAAAABAAIAAAAIABMAAAABAAIAAAAJABMAAAABAAIAAAAKABMAAAABAAIAAAALABMAAAABAAIAAAAMABMAAAACAAIAAAACABQAAAAAAAIAAAADABQAAAABAAIAAAAEABQAAAABAAIAAAAFABQAAAABAAIAAAAGABQAAAABAAIAAAAHABQAAAABAAIAAAAIABQAAAABAAIAAAAJABQAAAABAAIAAAAKABQAAAABAAIAAAALABQAAAABAAIAAAAMABQAAAACAAIAAAACABUAAAAAAAIAAAADABUAAAABAAIAAAAEABUAAAABAAIAAAAFABUAAAABAAIAAAAGABUAAAABAAIAAAAHABUAAAABAAIAAAAIABUAAAABAAIAAAAJABUAAAABAAIAAAAKABUAAAABAAIAAAALABUAAAABAAIAAAAMABUAAAACAAIAAAACABYAAAAAAAIAAAADABYAAAABAAIAAAAEABYAAAABAAIAAAAFABYAAAABAAIAAAAGABYAAAABAAIAAAAHABYAAAABAAIAAAAIABYAAAABAAIAAAAJABYAAAABAAIAAAAKABYAAAABAAIAAAALABYAAAABAAIAAAAMABYAAAACAAIAAAACABcAAAAAAAIAAAADABcAAAABAAIAAAAEABcAAAABAAIAAAAFABcAAAABAAIAAAAGABcAAAABAAIAAAAHABcAAAABAAIAAAAIABcAAAABAAIAAAAJABcAAAABAAIAAAAKABcAAAABAAIAAAALABcAAAABAAIAAAAMABcAAAACAAIAAAACABgAAAAAAAMAAAADABgAAAABAAMAAAAEABgAAAABAAMAAAAFABgAAAABAAMAAAAGABgAAAABAAMAAAAHABgAAAABAAMAAAAIABgAAAABAAMAAAAJABgAAAABAAMAAAAKABgAAAABAAMAAAALABgAAAABAAMAAAAMABgAAAACAAMAAAASAA4AAAAAAAEAAAATAA4AAAABAAEAAAAUAA4AAAABAAEAAAAVAA4AAAABAAEAAAAWAA4AAAACAAEAAAASAA8AAAAAAAIAAAATAA8AAAABAAIAAAAUAA8AAAABAAIAAAAVAA8AAAABAAIAAAAWAA8AAAACAAIAAAASABAAAAAAAAIAAAATABAAAAABAAIAAAAUABAAAAABAAIAAAAVABAAAAABAAIAAAAWABAAAAACAAIAAAASABEAAAAAAAIAAAATABEAAAABAAIAAAAUABEAAAABAAIAAAAVABEAAAABAAIAAAAWABEAAAACAAIAAAASABIAAAAAAAIAAAATABIAAAABAAIAAAAUABIAAAABAAIAAAAVABIAAAABAAIAAAAWABIAAAACAAIAAAASABMAAAAAAAIAAAATABMAAAABAAIAAAAUABMAAAABAAIAAAAVABMAAAABAAIAAAAWABMAAAACAAIAAAASABQAAAAAAAIAAAATABQAAAABAAIAAAAUABQAAAABAAIAAAAVABQAAAABAAIAAAAWABQAAAACAAIAAAASABUAAAAAAAIAAAATABUAAAABAAIAAAAUABUAAAABAAIAAAAVABUAAAABAAIAAAAWABUAAAACAAIAAAASABYAAAAAAAIAAAATABYAAAABAAIAAAAUABYAAAABAAIAAAAVABYAAAABAAIAAAAWABYAAAACAAIAAAASABcAAAAAAAIAAAATABcAAAABAAIAAAAUABcAAAABAAIAAAAVABcAAAABAAIAAAAWABcAAAACAAIAAAASABgAAAAAAAMAAAATABgAAAABAAMAAAAUABgAAAABAAMAAAAVABgAAAABAAMAAAAWABgAAAACAAMAAAAdAA8AAAAAAAEAAAAeAA8AAAABAAEAAAAfAA8AAAABAAEAAAAgAA8AAAABAAEAAAAhAA8AAAACAAEAAAAdABAAAAAAAAIAAAAeABAAAAABAAIAAAAfABAAAAABAAIAAAAgABAAAAABAAIAAAAhABAAAAACAAIAAAAdABEAAAAAAAIAAAAeABEAAAABAAIAAAAfABEAAAABAAIAAAAgABEAAAABAAIAAAAhABEAAAACAAIAAAAdABIAAAAAAAIAAAAeABIAAAABAAIAAAAfABIAAAABAAIAAAAgABIAAAABAAIAAAAhABIAAAACAAIAAAAdABMAAAAAAAIAAAAeABMAAAABAAIAAAAfABMAAAABAAIAAAAgABMAAAABAAIAAAAhABMAAAACAAIAAAAdABQAAAAAAAIAAAAeABQAAAABAAIAAAAfABQAAAABAAIAAAAgABQAAAABAAIAAAAhABQAAAACAAIAAAAdABUAAAAAAAIAAAAeABUAAAABAAIAAAAfABUAAAABAAIAAAAgABUAAAABAAIAAAAhABUAAAACAAIAAAAdABYAAAAAAAIAAAAeABYAAAABAAIAAAAfABYAAAABAAIAAAAgABYAAAABAAIAAAAhABYAAAACAAIAAAAdABcAAAAAAAIAAAAeABcAAAABAAIAAAAfABcAAAABAAIAAAAgABcAAAABAAIAAAAhABcAAAACAAIAAAAdABgAAAAAAAMAAAAeABgAAAABAAMAAAAfABgAAAABAAMAAAAgABgAAAABAAMAAAAhABgAAAACAAMAAAAnAA0AAAAAAAEAAAAoAA0AAAABAAEAAAApAA0AAAABAAEAAAAqAA0AAAABAAEAAAArAA0AAAACAAEAAAAnAA4AAAAAAAIAAAAoAA4AAAABAAIAAAApAA4AAAABAAIAAAAqAA4AAAABAAIAAAArAA4AAAACAAIAAAAnAA8AAAAAAAIAAAAoAA8AAAABAAIAAAApAA8AAAABAAIAAAAqAA8AAAABAAIAAAArAA8AAAACAAIAAAAnAA8AAAAAAAIAAAAoAA8AAAABAAIAAAApAA8AAAABAAIAAAAqAA8AAAABAAIAAAArAA8AAAACAAIAAAAnABAAAAAAAAIAAAAoABAAAAABAAIAAAApABAAAAABAAIAAAAqABAAAAABAAIAAAArABAAAAACAAIAAAAnABEAAAAAAAIAAAAoABEAAAABAAIAAAApABEAAAABAAIAAAAqABEAAAABAAIAAAArABEAAAACAAIAAAAnABIAAAAAAAIAAAAoABIAAAABAAIAAAApABIAAAABAAIAAAAqABIAAAABAAIAAAArABIAAAACAAIAAAAnABMAAAAAAAIAAAAoABMAAAABAAIAAAApABMAAAABAAIAAAAqABMAAAABAAIAAAArABMAAAACAAIAAAAnABQAAAAAAAIAAAAoABQAAAABAAIAAAApABQAAAABAAIAAAAqABQAAAABAAIAAAArABQAAAACAAIAAAAnABUAAAAAAAIAAAAoABUAAAABAAIAAAApABUAAAABAAIAAAAqABUAAAABAAIAAAArABUAAAACAAIAAAAnABYAAAAAAAIAAAAoABYAAAABAAIAAAApABYAAAABAAIAAAAqABYAAAABAAIAAAArABYAAAACAAIAAAAnABcAAAAAAAIAAAAoABcAAAABAAIAAAApABcAAAABAAIAAAAqABcAAAABAAIAAAArABcAAAACAAIAAAAnABgAAAAAAAMAAAAoABgAAAABAAMAAAApABgAAAABAAMAAAAqABgAAAABAAMAAAArABgAAAACAAMAAAAyAA4AAAAAAAEAAAAzAA4AAAABAAEAAAA0AA4AAAABAAEAAAA1AA4AAAABAAEAAAA2AA4AAAABAAEAAAA3AA4AAAABAAEAAAA4AA4AAAABAAEAAAA5AA4AAAABAAEAAAA6AA4AAAACAAEAAAAyAA8AAAAAAAIAAAAzAA8AAAABAAIAAAA0AA8AAAABAAIAAAA1AA8AAAABAAIAAAA2AA8AAAABAAIAAAA3AA8AAAABAAIAAAA4AA8AAAABAAIAAAA5AA8AAAABAAIAAAA6AA8AAAACAAIAAAAyABAAAAAAAAIAAAAzABAAAAABAAIAAAA0ABAAAAABAAIAAAA1ABAAAAABAAIAAAA2ABAAAAABAAIAAAA3ABAAAAABAAIAAAA4ABAAAAABAAIAAAA5ABAAAAABAAIAAAA6ABAAAAACAAIAAAAyABEAAAAAAAIAAAAzABEAAAABAAIAAAA0ABEAAAABAAIAAAA1ABEAAAABAAIAAAA2ABEAAAABAAIAAAA3ABEAAAABAAIAAAA4ABEAAAABAAIAAAA5ABEAAAABAAIAAAA6ABEAAAACAAIAAAAyABIAAAAAAAIAAAAzABIAAAABAAIAAAA0ABIAAAABAAIAAAA1ABIAAAABAAIAAAA2ABIAAAABAAIAAAA3ABIAAAABAAIAAAA4ABIAAAABAAIAAAA5ABIAAAABAAIAAAA6ABIAAAACAAIAAAAyABMAAAAAAAIAAAAzABMAAAABAAIAAAA0ABMAAAABAAIAAAA1ABMAAAABAAIAAAA2ABMAAAABAAIAAAA3ABMAAAABAAIAAAA4ABMAAAABAAIAAAA5ABMAAAABAAIAAAA6ABMAAAACAAIAAAAyABQAAAAAAAIAAAAzABQAAAABAAIAAAA0ABQAAAABAAIAAAA1ABQAAAABAAIAAAA2ABQAAAABAAIAAAA3ABQAAAABAAIAAAA4ABQAAAABAAIAAAA5ABQAAAABAAIAAAA6ABQAAAACAAIAAAAyABUAAAAAAAIAAAAzABUAAAABAAIAAAA0ABUAAAABAAIAAAA1ABUAAAABAAIAAAA2ABUAAAABAAIAAAA3ABUAAAABAAIAAAA4ABUAAAABAAIAAAA5ABUAAAABAAIAAAA6ABUAAAACAAIAAAAyABYAAAAAAAIAAAAzABYAAAABAAIAAAA0ABYAAAABAAIAAAA1ABYAAAABAAIAAAA2ABYAAAABAAIAAAA3ABYAAAABAAIAAAA4ABYAAAABAAIAAAA5ABYAAAABAAIAAAA6ABYAAAACAAIAAAAyABcAAAAAAAIAAAAzABcAAAABAAIAAAA0ABcAAAABAAIAAAA1ABcAAAABAAIAAAA2ABcAAAABAAIAAAA3ABcAAAABAAIAAAA4ABcAAAABAAIAAAA5ABcAAAABAAIAAAA6ABcAAAACAAIAAAAyABgAAAAAAAMAAAAzABgAAAABAAMAAAA0ABgAAAABAAMAAAA1ABgAAAABAAMAAAA2ABgAAAABAAMAAAA3ABgAAAABAAMAAAA4ABgAAAABAAMAAAA5ABgAAAABAAMAAAA6ABgAAAACAAMAAAA=")
+tile_set = ExtResource("1_terrain")
+
+[node name="Pool" type="Polygon2D" parent="."]
+z_index = -1
+color = Color(0.30, 0.47, 0.33, 1)
+polygon = PackedVector2Array(-900, 336, 1844, 336, 1844, 840, -900, 840)
+
+[node name="UpperRoute" type="TileMapLayer" parent="."]
+modulate = Color(0.91, 0.88, 0.70, 1)
+tile_map_data = PackedByteArray("AAAGAA0AAAAAAAEAAAAHAA0AAAABAAEAAAAIAA0AAAABAAEAAAAJAA0AAAACAAEAAAAOAAoAAAAAAAEAAAAPAAoAAAABAAEAAAAQAAoAAAABAAEAAAARAAoAAAACAAEAAAAVAAgAAAAAAAEAAAAWAAgAAAABAAEAAAAXAAgAAAABAAEAAAAYAAgAAAACAAEAAAAdAAoAAAAAAAEAAAAeAAoAAAABAAEAAAAfAAoAAAABAAEAAAAgAAoAAAACAAEAAAA=")
+tile_set = ExtResource("1_terrain")
+collision_enabled = false
+
+[node name="Ledge1" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(128, 212)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge1"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge2" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(256, 164)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge2"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge3" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(368, 132)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge3"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Ledge4" type="StaticBody2D" parent="UpperRoute"]
+position = Vector2(496, 164)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="UpperRoute/Ledge4"]
+shape = SubResource("RectangleShape2D_ledge")
+one_way_collision = true
+
+[node name="Hazards" type="Node2D" parent="."]
+
+[node name="Spikes1" parent="Hazards" instance=ExtResource("7_spikes")]
+position = Vector2(344, 224)
+cycle_offset = 0.2
+
+[node name="Spikes2" parent="Hazards" instance=ExtResource("7_spikes")]
+position = Vector2(664, 208)
+cycle_offset = 1.65
+
+[node name="Exit" type="Sprite2D" parent="."]
+position = Vector2(904, 192)
+texture = ExtResource("6_portal")
+centered = false
+
+[node name="SafezoneSign" type="Label" parent="."]
+offset_left = 862.0
+offset_top = 164.0
+offset_right = 962.0
+offset_bottom = 186.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 0.97, 0.84, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.13, 0.23, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 14
+text = "SAFEZONE"
+horizontal_alignment = 1
+
+[node name="PlayerSpawn" type="Marker2D" parent="."]
+position = Vector2(72, 240)
+
+[node name="Safezone" type="Area2D" parent="."]
+position = Vector2(912, 204)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Safezone"]
+shape = SubResource("RectangleShape2D_safezone")
+
+[node name="FallZone" type="Area2D" parent="."]
+position = Vector2(472, 768)
+collision_layer = 0
+collision_mask = 1
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FallZone"]
+shape = SubResource("RectangleShape2D_fall")
+
+[node name="Coins" type="Node2D" parent="."]
+
+[node name="Coin1" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(119, 238)
+
+[node name="Coin2" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(256, 141)
+
+[node name="Coin3" parent="Coins" instance=ExtResource("3_coin")]
+position = Vector2(888, 206)
+
+[node name="Mobs" type="Node2D" parent="."]
+
+[node name="Rhino1" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(504, 240)
+animation_path = "res://assets/hunter_art_mobs/plains/rhino.tres"
+patrol = Vector2(16, 0)
+patrol_speed = 3.2
+hit_points = 2
+
+[node name="ShoebillChick2" parent="Mobs" instance=ExtResource("5_mob")]
+position = Vector2(684, 192)
+animation_path = "res://assets/hunter_art_mobs/plains/shoebill_chick.tres"
+patrol = Vector2(7, 0)
+patrol_speed = 3.2
+
+[node name="Decoration" type="Node2D" parent="."]
+
+[node name="OrchardTree0" type="Sprite2D" parent="Decoration"]
+position = Vector2(91, 184)
+texture = ExtResource("tree")
+centered = false
+scale = Vector2(0.9, 0.9)
+modulate = Color(0.92, 0.91, 0.64, 1)
+
+[node name="MeadowSprig0_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(54, 240)
+texture = ExtResource("flower_3")
+centered = false
+
+[node name="MeadowSprig0_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(81, 240)
+texture = ExtResource("flower_1")
+centered = false
+
+[node name="MeadowSprig0_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(144, 240)
+texture = ExtResource("grass")
+centered = false
+
+[node name="MeadowSprig0_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(164, 240)
+texture = ExtResource("flower_3")
+centered = false
+
+[node name="MeadowSprig1_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(296, 208)
+texture = ExtResource("flower_1")
+centered = false
+
+[node name="MeadowSprig1_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(307, 208)
+texture = ExtResource("flower_2")
+centered = false
+
+[node name="MeadowSprig1_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(332, 208)
+texture = ExtResource("grass")
+centered = false
+
+[node name="MeadowSprig1_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(341, 208)
+texture = ExtResource("flower_1")
+centered = false
+
+[node name="MeadowSprig2_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(472, 224)
+texture = ExtResource("flower_2")
+centered = false
+
+[node name="MeadowSprig2_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(483, 224)
+texture = ExtResource("flower_3")
+centered = false
+
+[node name="MeadowSprig2_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(508, 224)
+texture = ExtResource("grass")
+centered = false
+
+[node name="MeadowSprig2_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(517, 224)
+texture = ExtResource("flower_2")
+centered = false
+
+[node name="MeadowSprig3_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(632, 192)
+texture = ExtResource("flower_3")
+centered = false
+
+[node name="MeadowSprig3_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(643, 192)
+texture = ExtResource("flower_1")
+centered = false
+
+[node name="MeadowSprig3_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(668, 192)
+texture = ExtResource("grass")
+centered = false
+
+[node name="MeadowSprig3_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(677, 192)
+texture = ExtResource("flower_3")
+centered = false
+
+[node name="OrchardTree4" type="Sprite2D" parent="Decoration"]
+position = Vector2(843, 152)
+texture = ExtResource("tree")
+centered = false
+scale = Vector2(0.9, 0.9)
+modulate = Color(0.92, 0.91, 0.64, 1)
+
+[node name="MeadowSprig4_0" type="Sprite2D" parent="Decoration"]
+position = Vector2(817, 208)
+texture = ExtResource("flower_1")
+centered = false
+
+[node name="MeadowSprig4_1" type="Sprite2D" parent="Decoration"]
+position = Vector2(839, 208)
+texture = ExtResource("flower_2")
+centered = false
+
+[node name="MeadowSprig4_2" type="Sprite2D" parent="Decoration"]
+position = Vector2(889, 208)
+texture = ExtResource("grass")
+centered = false
+
+[node name="MeadowSprig4_3" type="Sprite2D" parent="Decoration"]
+position = Vector2(906, 208)
+texture = ExtResource("flower_1")
+centered = false
+
+[node name="Sprite" parent="Mobs/Rhino1" index="0"]
+position = Vector2(-35.20, -33.55)
+scale = Vector2(0.55, 0.55)
+
+[node name="CollisionShape2D" parent="Mobs/Rhino1" index="1"]
+position = Vector2(0, -8)
+shape = SubResource("MobShape_0")
+
+[node name="Sprite" parent="Mobs/ShoebillChick2" index="0"]
+position = Vector2(-10.40, -20.80)
+scale = Vector2(0.65, 0.65)
+
+[node name="CollisionShape2D" parent="Mobs/ShoebillChick2" index="1"]
+position = Vector2(0, -8.5)
+shape = SubResource("MobShape_1")
+
+[editable path="Mobs/Rhino1"]
+
+[editable path="Mobs/ShoebillChick2"]

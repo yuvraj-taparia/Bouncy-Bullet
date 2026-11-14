@@ -29,22 +29,16 @@ const HAND := [
 	"...########.",
 ]
 
-static var _hand: ImageTexture
-
-
 ## Pixel pointing-hand used for every clickable button.
 static func install_hand_cursor() -> void:
-	if _hand == null:
-		var px := 3
-		var img := Image.create(HAND[0].length() * px, HAND.size() * px, false, Image.FORMAT_RGBA8)
-		for y in HAND.size():
-			for x in HAND[y].length():
-				var ch: String = HAND[y][x]
-				if ch == ".":
-					continue
+	var px := 3
+	var img := Image.create(HAND[0].length() * px, HAND.size() * px, false, Image.FORMAT_RGBA8)
+	for y in HAND.size():
+		for x in HAND[y].length():
+			var ch: String = HAND[y][x]
+			if ch != ".":
 				img.fill_rect(Rect2i(x * px, y * px, px, px), INK if ch == "#" else Color.WHITE)
-		_hand = ImageTexture.create_from_image(img)
-	Input.set_custom_mouse_cursor(_hand, Input.CURSOR_POINTING_HAND, Vector2(5 * 3, 1 * 3))
+	Input.set_custom_mouse_cursor(img, Input.CURSOR_POINTING_HAND, Vector2(5 * px, px))
 
 
 static func draw_coin(ci: CanvasItem, center: Vector2, s := 2.0) -> void:
