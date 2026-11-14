@@ -33,6 +33,12 @@ const MENU_CONTROLS := Rect2(367, 450, 293, 72)
 const TILE_X := [314, 420, 527, 634]
 const TILE_Y := [157, 252, 347]
 const TILE_SIZE := Vector2(76, 74)
+const TILE_NUMBER_BOUNDS := Rect2i(9, 12, 57, 44)
+const DIFFICULTY_COLORS := {
+	"Leicht": [Color("#248c42"), Color("#95ef64")],
+	"Mittel": [Color("#bd460c"), Color("#ffb24d")],
+	"Schwer": [Color("#a92434"), Color("#ff6265")],
+}
 const LEVELS_BACK := Rect2(412, 462, 198, 68)
 const SHOP_BUY := [Rect2(290, 380, 97, 55), Rect2(462, 380, 98, 55), Rect2(635, 380, 97, 55)]
 const SHOP_BACK := Rect2(412, 462, 198, 72)
@@ -140,11 +146,12 @@ func _build_main_menu() -> void:
 
 
 func _build_level_select() -> void:
-	var stage := _make_stage("levels", LEVELS_IMG)
+	var artwork := _color_level_numbers()
+	var stage := _make_stage("levels", artwork)
 	for row in TILE_Y.size():
 		for col in TILE_X.size():
 			var i := row * TILE_X.size() + col
-			var tile := _add_button(stage, LEVELS_IMG, Rect2(Vector2(TILE_X[col], TILE_Y[row]), TILE_SIZE), _on_level_pressed.bind(i))
+			var tile := _add_button(stage, artwork, Rect2(Vector2(TILE_X[col], TILE_Y[row]), TILE_SIZE), _on_level_pressed.bind(i))
 			tile.show_arrow = false
 			tile.sparkle_count = 3
 			tile.focus_entered.connect(_show_level_info.bind(i))
@@ -159,6 +166,25 @@ func _build_level_select() -> void:
 	_level_info.size = Vector2(500, 26)
 	stage.add_child(_level_info)
 	_focus_default["levels"] = _level_tiles[0]
+
+
+func _color_level_numbers() -> ImageTexture:
+	var artwork := LEVELS_IMG.get_image().duplicate() as Image
+	for row in TILE_Y.size():
+		for col in TILE_X.size():
+			var palette: Array = DIFFICULTY_COLORS[LEVELS[row * TILE_X.size() + col][2]]
+			var dark: Color = palette[0]
+			var light: Color = palette[1]
+			# The digits are painted into the mockup. Isolate their saturated fill within each tile.
+			var region := Rect2i(Vector2i(TILE_X[col], TILE_Y[row]) + TILE_NUMBER_BOUNDS.position, TILE_NUMBER_BOUNDS.size)
+			for y in range(region.position.y, region.end.y):
+				for x in range(region.position.x, region.end.x):
+					var pixel := artwork.get_pixel(x, y)
+					var warm_fill := smoothstep(0.43, 0.61, pixel.r)
+					var coverage := warm_fill * (1.0 - smoothstep(0.24, 0.35, pixel.b))
+					var shade := inverse_lerp(0.17, 0.81, pixel.g)
+					artwork.set_pixel(x, y, pixel.lerp(dark.lerp(light, clampf(shade, 0.0, 1.0)), coverage))
+	return ImageTexture.create_from_image(artwork)
 
 
 func _build_level_preview(stage: Control) -> void:
