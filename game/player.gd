@@ -7,7 +7,11 @@ extends CharacterBody2D
 signal ammo_changed(ammo: int, max_ammo: int)
 signal fired
 
-const GRAVITY := 900.0
+## Gravity multiplier for the player and falling objects (shells, magazines).
+const GRAVITY_SCALE := 1.25
+const GRAVITY := 900.0 * GRAVITY_SCALE
+## Fastest falling speed, so long drops stay readable with the stronger gravity.
+const MAX_FALL_SPEED := 620.0
 const WALK_SPEED := 100.0
 const GROUND_ACCEL := 900.0
 const AIR_ACCEL := 260.0
@@ -27,6 +31,7 @@ var max_ammo := 3
 var ammo := 3
 var frozen := false
 var _cooldown := 0.0
+var _trigger_held := false   ## left click is held down for automatic fire
 var _reloading := false
 var _shake := 0.0
 var _was_on_floor := true
@@ -62,7 +67,7 @@ func _physics_process(delta: float) -> void:
 			aim = Vector2.RIGHT * body.facing
 		_point_gun(aim)
 
-	velocity.y += GRAVITY * delta
+	velocity.y = minf(velocity.y + GRAVITY * delta, maxf(velocity.y, MAX_FALL_SPEED))
 	var input := 0.0 if frozen else Input.get_axis(&"move_left", &"move_right")
 
 	if is_on_floor():
@@ -71,11 +76,17 @@ func _physics_process(delta: float) -> void:
 		# Steer a little in the air without cancelling a big recoil launch.
 		velocity.x = move_toward(velocity.x, input * WALK_SPEED, AIR_ACCEL * delta)
 
+	# Hold left click to keep firing at the gun's own fire rate (one shot per
+	# physics frame at most). Releasing, or running out of ammo, stops it.
 	_cooldown -= delta
-	if not frozen and Input.is_action_just_pressed(&"shoot"):
-		var hovered_control := get_viewport().gui_get_hovered_control()
-		if _cooldown <= 0.0 and not hovered_control is BaseButton:
-			_shoot(aim)
+	_update_trigger()
+	if _trigger_held and ammo > 0 and _cooldown <= 0.0:
+		# While the trigger stays held, carry over the part of a frame the shot
+		# was late so fast guns keep their real fire rate. More than a frame
+		# late means the gun was idle: start fresh, no banked shots.
+		if _cooldown < -delta:
+			_cooldown = 0.0
+		_shoot(aim)
 
 	move_and_slide()
 
@@ -83,10 +94,20 @@ func _physics_process(delta: float) -> void:
 	if on_floor and not _was_on_floor:
 		_squash(Vector2(1.3, 0.75))
 	_was_on_floor = on_floor
-	if on_floor and ammo < max_ammo and not _reloading:
+	# Reload on the ground, but not between shots of a held trigger.
+	var firing := _trigger_held and ammo > 0
+	if on_floor and ammo < max_ammo and not _reloading and not firing:
 		_start_reload()
 
 	_update_shake(delta)
+
+
+func _update_trigger() -> void:
+	if frozen or not Input.is_action_pressed(&"shoot"):
+		_trigger_held = false
+	elif Input.is_action_just_pressed(&"shoot"):
+		# A click on an on-screen button (like MENU) is not a shot.
+		_trigger_held = not get_viewport().gui_get_hovered_control() is BaseButton
 
 
 func _point_gun(aim: Vector2) -> void:
@@ -100,14 +121,14 @@ func _shoot(aim: Vector2) -> void:
 	if ammo <= 0:
 		return
 	ammo -= 1
-	_cooldown = gun_data.cooldown
+	_cooldown += gun_data.cooldown
 	_reloading = false
 
 	# Stop any motion toward where we're aiming, then kick the other way.
 	var along := velocity.dot(aim)
 	if along > 0.0:
 		velocity -= aim * along
-	velocity += -aim * float(gun_data.recoil)
+	velocity += -aim * float(gun_data.recoil) * Guns.RECOIL_SCALE
 	velocity = velocity.limit_length(MAX_SPEED)
 
 	# The gun scene's shoot animation shows the muzzle flash and ejects the casing.
@@ -172,6 +193,7 @@ func prepare_respawn(at: Vector2) -> void:
 	velocity = Vector2.ZERO
 	ammo = max_ammo
 	_cooldown = 0.0
+	_trigger_held = false
 	_reloading = false
 	rig.cancel_reload()
 	_shake = 0.0
