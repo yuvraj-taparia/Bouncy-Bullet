@@ -4,6 +4,11 @@ extends Node2D
 
 signal restart_requested
 
+## Physics layer of the invisible side walls: only the player collides with
+## it, bullets fly through.
+const BOUNDARY_LAYER := 4
+const WALL_THICKNESS := 64.0
+
 @export var level_scene: PackedScene
 
 var level: Node2D
@@ -26,6 +31,7 @@ func _ready() -> void:
 	var terrain: TileMapLayer = level.get_node("Terrain")
 	player.camera.limit_right = terrain.get_used_rect().end.x * terrain.tile_set.tile_size.x + 76
 	player.camera.reset_smoothing()
+	_add_side_walls()
 	player.ammo_changed.connect(hud.set_ammo)
 	player.fired.connect(func(): _shots += 1)
 	hud.set_ammo(player.ammo, player.max_ammo)
@@ -61,6 +67,37 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_coin_collected() -> void:
 	_coins_collected += 1
 	hud.set_coins(_coins_collected, _coins_total)
+
+
+## Invisible walls at the left and right ends of the map. Without them a big
+## launch carries the player past the end of the FallZone, where they fall
+## forever and never respawn.
+func _add_side_walls() -> void:
+	var left := INF
+	var right := -INF
+	for layer_name in ["Terrain", "UpperRoute"]:
+		var layer: TileMapLayer = level.get_node_or_null(layer_name)
+		if layer == null or layer.get_used_cells().is_empty():
+			continue
+		var cells := layer.get_used_rect()
+		var cell := Vector2(layer.tile_set.tile_size)
+		left = minf(left, layer.to_global(Vector2(cells.position) * cell).x)
+		right = maxf(right, layer.to_global(Vector2(cells.end) * cell).x)
+	if left == INF:
+		return
+	for x in [left - WALL_THICKNESS * 0.5, right + WALL_THICKNESS * 0.5]:
+		var wall := StaticBody2D.new()
+		wall.name = "BoundaryWall"
+		wall.collision_layer = BOUNDARY_LAYER
+		wall.collision_mask = 0
+		var shape := CollisionShape2D.new()
+		var rect := RectangleShape2D.new()
+		rect.size = Vector2(WALL_THICKNESS, 20000)
+		shape.shape = rect
+		wall.add_child(shape)
+		wall.position = Vector2(x, 0)
+		add_child(wall)
+	player.collision_mask |= BOUNDARY_LAYER
 
 
 func _spawn_point() -> Vector2:
