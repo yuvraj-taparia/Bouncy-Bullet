@@ -26,29 +26,54 @@ texture_filter = 1
 [node name="Backdrop" type="Node2D" parent="."]
 z_index = -10
 
-[node name="Sky" type="Sprite2D" parent="Backdrop"]
-position = Vector2(-48, -48)
+[node name="SkyLayer" type="Parallax2D" parent="Backdrop"]
+scroll_scale = Vector2(0.18, 1)
+scroll_offset = Vector2(-48, -48)
+repeat_size = Vector2(736, 0)
+repeat_times = 2
+
+[node name="Sky" type="Sprite2D" parent="Backdrop/SkyLayer"]
 texture = ExtResource("sky")
 centered = false
 scale = Vector2(2, 2)
 
-[node name="Ridge" type="Sprite2D" parent="Backdrop"]
-position = Vector2(-80, -32)
+[node name="RidgeLayer" type="Parallax2D" parent="Backdrop"]
+scroll_scale = Vector2(0.35, 1)
+scroll_offset = Vector2(-80, -32)
+repeat_size = Vector2(800, 0)
+repeat_times = 2
+
+[node name="Ridge" type="Sprite2D" parent="Backdrop/RidgeLayer"]
 texture = ExtResource("ridge")
 centered = false
 scale = Vector2(2, 2)
 
-[node name="Hills" type="Sprite2D" parent="Backdrop"]
-position = Vector2(-96, -29)
+[node name="HillsLayer" type="Parallax2D" parent="Backdrop"]
+scroll_scale = Vector2(0.52, 1)
+scroll_offset = Vector2(-96, -29)
+repeat_size = Vector2(832, 0)
+repeat_times = 2
+
+[node name="Hills" type="Sprite2D" parent="Backdrop/HillsLayer"]
 texture = ExtResource("hills")
 centered = false
 scale = Vector2(2, 2)
 
-[node name="Meadow" type="Sprite2D" parent="Backdrop"]
-position = Vector2(-128, -22)
+[node name="MeadowLayer" type="Parallax2D" parent="Backdrop"]
+scroll_scale = Vector2(0.75, 1)
+scroll_offset = Vector2(-128, -22)
+repeat_size = Vector2(896, 0)
+repeat_times = 2
+
+[node name="Meadow" type="Sprite2D" parent="Backdrop/MeadowLayer"]
 texture = ExtResource("meadow")
 centered = false
 scale = Vector2(2, 2)
+
+[node name="SkyFill" type="Polygon2D" parent="Backdrop"]
+z_index = -1
+color = Color(0.160784, 0.678431, 1, 1)
+polygon = PackedVector2Array(-160, -300, 1440, -300, 1440, 620, -160, 620)
 
 [node name="Pool" type="Polygon2D" parent="."]
 z_index = -1

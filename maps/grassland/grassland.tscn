@@ -10,31 +10,6 @@ size = Vector2(1760, 768)
 
 [node name="Grassland" instance=ExtResource("1_base")]
 
-[node name="Sky" parent="Backdrop" index="0"]
-texture_repeat = 3
-region_enabled = true
-region_rect = Rect2(0, 0, 730, 208)
-
-[node name="Ridge" parent="Backdrop" index="1"]
-texture_repeat = 3
-region_enabled = true
-region_rect = Rect2(0, 0, 746, 208)
-
-[node name="Hills" parent="Backdrop" index="2"]
-texture_repeat = 3
-region_enabled = true
-region_rect = Rect2(0, 0, 754, 208)
-
-[node name="Meadow" parent="Backdrop" index="3"]
-texture_repeat = 3
-region_enabled = true
-region_rect = Rect2(0, 0, 770, 208)
-
-[node name="SkyFill" type="Polygon2D" parent="Backdrop" index="4"]
-z_index = -1
-color = Color(0.160784, 0.678431, 1, 1)
-polygon = PackedVector2Array(-160, -300, 1440, -300, 1440, 544, -160, 544)
-
 [node name="Pool" parent="." index="1"]
 polygon = PackedVector2Array(-160, 312, 1440, 312, 1440, 620, -160, 620)
 
