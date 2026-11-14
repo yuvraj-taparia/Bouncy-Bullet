@@ -1,0 +1,40 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://game/player_body.gd" id="2_body"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player"]
+radius = 5.0
+height = 20.0
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_mask = 1
+floor_snap_length = 2.0
+script = ExtResource("1_player")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -10)
+shape = SubResource("CapsuleShape2D_player")
+
+[node name="Body" type="Node2D" parent="."]
+script = ExtResource("2_body")
+
+[node name="Gun" type="Node2D" parent="."]
+z_index = 1
+position = Vector2(0, -11)
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Gun"]
+offset = Vector2(7, -3)
+
+[node name="Muzzle" type="Marker2D" parent="Gun"]
+position = Vector2(21, -9)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(0, -16)
+zoom = Vector2(2, 2)
+limit_left = -44
+limit_top = -44
+limit_right = 684
+limit_bottom = 360
+position_smoothing_enabled = true
+position_smoothing_speed = 7.0

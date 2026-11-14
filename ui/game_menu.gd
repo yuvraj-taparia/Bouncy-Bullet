@@ -5,19 +5,15 @@ const LEVELS: Array[PackedScene] = [
 	preload("res://maps/river_crossing/river_crossing.tscn"),
 	preload("res://maps/highlands/highlands.tscn"),
 ]
-const SCROLL_CAMERA := preload("res://maps/scroll_camera.tscn")
+const GAME := preload("res://game/game.tscn")
 
 @onready var menu: Control = $Menu
 @onready var level_buttons: ButtonGroup = %Grassland.button_group
 @onready var play_button: Button = %Play
 @onready var back_button: Button = %Back
 @onready var preview_viewport: SubViewport = %Viewport
-@onready var coin_counter: Label = %CoinCounter
-
-var active_level: Node2D
+var active_game: Node2D
 var preview_level: Node2D
-var coins_collected := 0
-var coins_total := 0
 
 
 func _ready() -> void:
@@ -36,41 +32,34 @@ func _show_preview(selected: BaseButton) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if active_level != null and event.is_action_pressed("ui_cancel"):
+	if active_game != null and event.is_action_pressed("ui_cancel"):
 		get_viewport().set_input_as_handled()
 		_return_to_menu()
 
 
 func _start_level() -> void:
 	var selected := level_buttons.get_pressed_button()
-	active_level = LEVELS[selected.get_index()].instantiate()
-	var coins := active_level.get_node("Coins").get_children()
-	coins_collected = 0
-	coins_total = coins.size()
-	for coin in coins:
-		coin.collected.connect(_on_coin_collected)
-	_update_coin_counter()
-	active_level.add_child(SCROLL_CAMERA.instantiate())
-	add_child(active_level)
+	active_game = GAME.instantiate()
+	active_game.level_scene = LEVELS[selected.get_index()]
+	active_game.restart_requested.connect(_restart_level)
+	add_child(active_game)
 	menu.hide()
 	back_button.show()
-	coin_counter.show()
-	back_button.grab_focus()
 
 
 func _return_to_menu() -> void:
-	active_level.queue_free()
-	active_level = null
+	_remove_game()
 	back_button.hide()
-	coin_counter.hide()
 	menu.show()
 	play_button.grab_focus()
 
 
-func _on_coin_collected() -> void:
-	coins_collected += 1
-	_update_coin_counter()
+func _restart_level() -> void:
+	_remove_game()
+	_start_level()
 
 
-func _update_coin_counter() -> void:
-	coin_counter.text = "Coins %d/%d" % [coins_collected, coins_total]
+func _remove_game() -> void:
+	remove_child(active_game)
+	active_game.queue_free()
+	active_game = null
