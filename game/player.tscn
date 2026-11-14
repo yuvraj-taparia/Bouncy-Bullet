@@ -23,12 +23,6 @@ script = ExtResource("2_body")
 z_index = 1
 position = Vector2(0, -11)
 
-[node name="Sprite" type="AnimatedSprite2D" parent="Gun"]
-offset = Vector2(7, -3)
-
-[node name="Muzzle" type="Marker2D" parent="Gun"]
-position = Vector2(21, -9)
-
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(0, -16)
 zoom = Vector2(2, 2)

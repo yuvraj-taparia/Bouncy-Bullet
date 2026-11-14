@@ -24,19 +24,6 @@ static func add_strip(frames: SpriteFrames, anim: StringName, path: String, coun
 		frames.add_frame(anim, atlas)
 
 
-## Desert Eagle: idle, shoot (9 frames) and reload (3 frames).
-static func desert_eagle() -> SpriteFrames:
-	if _cache.has("deagle"):
-		return _cache["deagle"]
-	var frames := SpriteFrames.new()
-	frames.remove_animation(&"default")
-	add_strip(frames, &"idle", GUNS + "guns/deserteagle/deserteagle.png", 1, 1.0, true)
-	add_strip(frames, &"shoot", GUNS + "guns/deserteagle/deserteagle-shoot.png", 9, 30.0)
-	add_strip(frames, &"reload", GUNS + "guns/deserteagle/deserteagle-reload.png", 3, 10.0)
-	_cache["deagle"] = frames
-	return frames
-
-
 static func one_shot(key: String, path: String, count: int, fps: float) -> SpriteFrames:
 	if _cache.has(key):
 		return _cache[key]

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/attachments/stocks/AKLightStock.png" id="1_0e1in"]
+
+[node name="AK47LightStock" type="Sprite2D"]
+texture = ExtResource("1_0e1in")
+offset = Vector2(-8, 2.5)

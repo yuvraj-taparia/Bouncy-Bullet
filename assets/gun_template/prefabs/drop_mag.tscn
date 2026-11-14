@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://assets/gun_template/scripts/drop_mag.gd" id="1_kqa14"]
+
+[node name="DropMag" type="Sprite2D"]
+z_index = -1
+y_sort_enabled = true
+script = ExtResource("1_kqa14")

@@ -5,6 +5,8 @@ extends Node2D
 
 const SPEED := 650.0
 const KNOCKBACK := 230.0
+const IMPACT := preload("res://assets/gun_template/prefabs/impact_particle.tscn")
+const LIGHT := preload("res://assets/pixel_art_guns/sprites/light.png")
 
 var direction := Vector2.RIGHT
 var shooter: CharacterBody2D
@@ -22,10 +24,25 @@ func _ready() -> void:
 	_sprite.texture = load(SpriteSheets.GUNS + "bullet.png")
 	_sprite.hframes = 2
 	_sprite.frame = 1
-	_sprite.scale = Vector2(0.5, 0.5)
+	_sprite.scale = Vector2(0.75, 0.75)
 	_sprite.modulate = tint
 	add_child(_sprite)
+	# Soft glow, as in the gun pack's bullet prefab.
+	var glow := Sprite2D.new()
+	glow.texture = LIGHT
+	glow.self_modulate = Color(tint.r, tint.g * 0.89, tint.b * 0.25, 0.3)
+	glow.scale = Vector2(0.75, 0.75)
+	add_child(glow)
 	rotation = direction.angle()
+
+
+## The pack's impact spark, pointing away from the surface that was hit.
+func _spark(at: Vector2, angle: float) -> void:
+	var fx: Node2D = IMPACT.instantiate()
+	fx.scale = Vector2.ONE
+	get_parent().add_child(fx)
+	fx.global_position = at
+	fx.global_rotation = angle
 
 
 func _physics_process(delta: float) -> void:
@@ -50,14 +67,14 @@ func _physics_process(delta: float) -> void:
 
 		if hit.collider == shooter:
 			shooter.hit_by_own_bullet(direction * KNOCKBACK)
-			SpriteSheets.spawn_fx(get_parent(), SpriteSheets.impact(), hit.position, direction.angle())
+			_spark(hit.position, direction.angle() + PI)
 			queue_free()
 			return
 
 		remaining -= global_position.distance_to(hit.position)
 		var normal: Vector2 = hit.normal
 		global_position = hit.position + normal * 0.5
-		SpriteSheets.spawn_fx(get_parent(), SpriteSheets.impact(), hit.position, normal.angle())
+		_spark(hit.position, normal.angle())
 		bounces += 1
 		if bounces > max_bounces:
 			queue_free()

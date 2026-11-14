@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/attachments/mags/AKNormalMag.png" id="1_v1vjf"]
+
+[node name="AK47NormalMag" type="Sprite2D"]
+texture = ExtResource("1_v1vjf")
+offset = Vector2(0.5, 5.5)

@@ -1,0 +1,814 @@
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/guns/deserteagle/deserteagle.png" id="1_7h0wv"]
+[ext_resource type="Script" path="res://assets/gun_template/scripts/gun_vars.gd" id="2_uvhhv"]
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/guns/deserteagle/deserteagle-shoot.png" id="3_yb3et"]
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/attachments/sights/2X.png" id="4_4yac4"]
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/attachments/muzzles/Silencer.png" id="4_jc4og"]
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/attachments/mags/PistolExtMag.png" id="6_77uiy"]
+[ext_resource type="PackedScene" path="res://assets/gun_template/prefabs/muzzle_flash.tscn" id="7_p1645"]
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/guns/deserteagle/deserteagle-reload.png" id="8_3uerl"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mgyhr"]
+animation = &"default"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_1dbf3"]
+animation = &"pickup"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_km077"]
+animation = &"reload"
+
+[sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_10tg0"]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_d00yh"]
+graph_offset = Vector2(-278.376, 201.097)
+nodes/Animation/node = SubResource("AnimationNodeAnimation_km077")
+nodes/Animation/position = Vector2(-60, 180)
+nodes/TimeScale/node = SubResource("AnimationNodeTimeScale_10tg0")
+nodes/TimeScale/position = Vector2(180, 180)
+nodes/output/position = Vector2(440, 160)
+node_connections = [&"TimeScale", 0, &"Animation", &"output", 0, &"TimeScale"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_nbcwa"]
+animation = &"shoot"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_y73b6"]
+advance_mode = 2
+advance_condition = &"shooting"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_7gimr"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_n7nci"]
+advance_mode = 2
+advance_condition = &"reloading"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pnlum"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2766l"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1fmul"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_3a2li"]
+states/Start/position = Vector2(118, 105)
+states/idle/node = SubResource("AnimationNodeAnimation_mgyhr")
+states/idle/position = Vector2(385, 91)
+states/pickup/node = SubResource("AnimationNodeAnimation_1dbf3")
+states/pickup/position = Vector2(239, 197)
+states/reload/node = SubResource("AnimationNodeBlendTree_d00yh")
+states/reload/position = Vector2(501, 227)
+states/shoot/node = SubResource("AnimationNodeAnimation_nbcwa")
+states/shoot/position = Vector2(524, 70)
+transitions = ["idle", "shoot", SubResource("AnimationNodeStateMachineTransition_y73b6"), "shoot", "idle", SubResource("AnimationNodeStateMachineTransition_7gimr"), "idle", "reload", SubResource("AnimationNodeStateMachineTransition_n7nci"), "reload", "idle", SubResource("AnimationNodeStateMachineTransition_pnlum"), "Start", "pickup", SubResource("AnimationNodeStateMachineTransition_2766l"), "pickup", "idle", SubResource("AnimationNodeStateMachineTransition_1fmul")]
+graph_offset = Vector2(-111, 38)
+
+[sub_resource type="Animation" id="Animation_8b44q"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("gun:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("1_7h0wv")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("gun:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(9, -2.5)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("gun:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("gun:vframes")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("gun:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("gun/Sight:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(11.5, -10.5)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("gun/Muzzle:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(21.5, -8.5)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("gun/Magazine:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(4.5, -3.5)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("DropMag:visible")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("gun/Magazine:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/10/type = "bezier"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("DropMag:rotation")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/11/type = "bezier"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("gun:position:x")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/12/type = "bezier"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("gun:position:y")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/13/type = "bezier"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("gun:rotation")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="Animation" id="Animation_pwqwi"]
+resource_name = "idle"
+length = 0.01
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("gun:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("1_7h0wv")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("gun:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(9, -2.5)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("gun:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("gun:vframes")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("gun:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("gun/Magazine:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_v8nh7"]
+resource_name = "pickup"
+length = 2.075
+step = 0.0
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("gun:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(-10, 0, 0, 0.0399558, 4.83333, 19.651, -0.131382, 0.182703, 0.0398183, 0.148643, 6.5704, -0.0228792, 0, 0.0228792, 0, 19.2051, -0.0286338, -0.148643, 0.0286338, 0.148643, 7.6109, -0.0232578, 0.445929, 0.0232578, -0.445929, 18.7592, -0.0229873, 0, 0.0229873, 0, 8.0569, -0.0235282, 0, 0.0235282, 0, 20.097, -0.022176, 0.297287, 0.022176, -0.297287, 9.0974, -0.0164968, 0, 0.0164968, 0, 19.5024, -0.0292075, 0.297285, 0.0292075, -0.297285, 7.85208, -0.0286666, 0, 0.0126269, 0, 10.1057, -0.0140382, -0.0274382, 0.0122342, 0.0239122, 8.34768, -0.0140629, 0, 0.0194769, 0, 9.54808, -0.0152173, 0.0137186, 0.0152173, -0.0137186, 8.75818, -0.0241915, 0.00774384, 0.0241915, -0.00774384, 9.14538, -0.0195041, -0.01173, 0.0128762, 0.00774384, 9.07218, -0.0140629, 0, 0.0194769, 0, 9.07218, -0.0140629, 0, 0.0194769, 0, -3.60514, -0.0443218, -0.0195236, 0.0417339, 0.0267347, 1.60078, -0.0332026, -0.156569, 0.0332026, 0.156569, -0.982609, -0.0379459, 0, 0.0379459, 0, 0.387371, -0.0299059, -0.0782846, 0.0299059, 0.0782846, 0, -0.0213613, 0.117427, 0.0213613, -0.117427),
+"times": PackedFloat32Array(0, 0.262657, 0.340923, 0.42168, 0.49705, 0.60675, 0.683276, 0.772747, 0.836182, 0.929222, 0.972766, 1.01643, 1.06735, 1.11995, 1.19565, 1.27797, 1.34361, 1.43772, 1.64464, 1.73936, 1.81535, 1.91393, 1.99481)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("gun:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(16, 0, 0, 0.0402456, -0.353438, 18.0249, -0.0138009, 1.69531, 0.0681204, -8.36794, -14.8206, -0.0723529, 0.572976, 0.0430326, 0, -5.01012, -0.0397739, -1.0405, 0.0285813, -0.891859, -13.9287, -0.0205671, 0.148643, 0.0205671, -0.148643, -5.45605, -0.0235916, 0.148643, 0.0235916, -0.148643, -13.0369, -0.0211719, 0.44593, 0.0211719, -0.44593, -5.45605, -0.0216257, 0, 0.0216257, 0, -11.9964, -0.0204158, 0, 0.0204158, 0, -5.15877, -0.0246502, 0, 0.0370413, -0.44593, -8.67276, -0.0316646, 0, 0.0316646, 0, -8.37546, -0.101315, -2.52693, 0.0775135, -0.44593, 2.91529, -0.0413226, -0.0693431, 0.0413226, 0.0693431, -1.03726, -0.0289977, 0.138686, 0.0289977, -0.138686, 0.696311, -0.025575, -0.208029, 0.025575, 0.208029, -0.621205, -0.0235916, 0.069343, 0.0235916, -0.069343, 0, -0.0187522, 0, 0.0187522, 0),
+"times": PackedFloat32Array(0, 0.105471, 0.279392, 0.375137, 0.444504, 0.515703, 0.595551, 0.673404, 0.754583, 0.855059, 0.985476, 1.3939, 1.59241, 1.68681, 1.77996, 1.87295, 1.95329)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("gun:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(1.63851, 0, 0, 0.0433666, -0.118331, 1.90896, -0.029397, 0.113381, 0.150059, 0.0794424, 0.580745, -0.0451399, 0.767147, 0.0307574, -0.686795, -6.283, -0.0307574, 1.06722, 0.0323911, -1.12391, -12.566, -0.0323911, 1.1088, 0.0287949, -0.985697, -18.85, -0.0287949, 1.10596, 0.0283295, -1.08809, -26.0125, -0.0537135, -0.0123021, 0.0316676, 0, -25.5337, -0.0272007, 0.00542831, 0.0272007, -0.00542831, -25.7449, -0.0271593, 0.00271225, 0.0271593, -0.00271225, -25.6854, -0.0527167, 0, 0.0605818, 0.125727, -25.3173, -0.0477854, -0.013422, 0.0477854, 0.013422, -24.9773, -0.0354066, 0.000991821, 0.0354066, -0.000991821, -25.2531, -0.0352311, 0.000785828, 0.0352311, -0.000785828, -25.0626, -0.0319685, 0.00117493, 0.0319685, -0.00117493, -25.133, -0.0432935, 0.00155067, 0, 0),
+"times": PackedFloat32Array(0, 0.0816818, 0.218252, 0.402796, 0.597143, 0.769912, 0.931526, 1.04007, 1.1393, 1.26648, 1.5231, 1.65968, 1.75653, 1.88172, 1.98643)
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.00407522, 0.256932, 0.397334, 0.586832, 0.753916, 0.931188, 1.5549),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"values": [{
+"args": ["desertEagleEquip"],
+"method": &"playAudio"
+}, {
+"args": ["spin"],
+"method": &"playAudio"
+}, {
+"args": ["spin"],
+"method": &"playAudio"
+}, {
+"args": ["spin"],
+"method": &"playAudio"
+}, {
+"args": ["spin"],
+"method": &"playAudio"
+}, {
+"args": ["catch"],
+"method": &"playAudio"
+}, {
+"args": ["desertEagleEquip"],
+"method": &"playAudio"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_cd2tv"]
+resource_name = "reload"
+length = 3.0
+step = 0.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("DropMag:visible")
+tracks/0/interp = 0
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.110661, 1.8211),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [false, true, false]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("DropMag:position:x")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(2, 2, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(3.85185, 0, 0, 0.00115, -3.25, -15.6481, -0.00115, 0.0565168, 0.0548068, -2.69348, -12.6481, -0.234026, -0.322874, 0.080474, 0.111026, -12.0951, -0.0746796, -1.27227, 0.0640008, 1.01859, 0.194206, -0.110792, -1.34926, 0.11393, 1.16956, 0.55785, -0.101853, -0.189347, 0.0684081, 0.172619, 0.93585, -0.0590392, -0.00874329, 0.0750245, 0.0111106, 0.50285, -0.0679846, -0.00437069, 0.0500938, 0.00437164, 0.98885, -0.0598118, -0.0937061, 0.0226009, 0.462295, 4.04963, -0.0598117, 0.0281124, 0, 0),
+"times": PackedFloat32Array(-0.00157416, 0.00532584, 0.334167, 0.528811, 0.839419, 1.03663, 1.35817, 1.64442, 1.77132, 2.08549)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("gun:position:x")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(-3.91545, 0, 0, 0.0862999, 0.11975, -0.606951, -0.0669256, -0.636741, 0.0583075, 0.554746, -1.6471, -0.0372371, -0.133159, 0.038783, 0.138686, -0.638651, -0.0328496, -0.0720515, 0.0316148, 0.0693431, -1.5212, -0.0307603, 0, 0.0316264, 0, -3.39347, -0.0307603, 0, 0.0190671, 0, -2.14529, -0.0549425, -0.684046, 0.0256336, 0.319144, -0.647313, -0.0196525, -0.277372, 0.0290514, -0.0693431, -0.647313, -0.0247792, 0.138686, 0.0221796, -0.124136, -2.10352, -0.0223582, 0.0462287, 0.0247792, -0.138686, -3.18544, -0.0700901, -0.20803, 0.0657681, -0.20803, -2.21463, -0.0281969, -0.0267347, 0.021795, 0.0206648, -2.0066, -0.0447267, 0.138687, 0.0369633, 0.0149259, 0.0736933, -0.0626456, 0.117259, 0.0435815, 0.208029, -2.21464, -0.0239246, -0.138686, 0.0281971, 0.277373, 0.180272, -0.019721, -0.0340739, 0.0210979, -0.145683, -1.55901, -0.0114658, 0, 0.02, 0, -0.0484067, -0.016052, -0.0498002, 0.0201228, -0.0830004, -0.832121, -0.0120037, -0.0672434, 0, 0),
+"times": PackedFloat32Array(-3.66198e-05, 0.293792, 0.534306, 0.663852, 0.797734, 0.886962, 1.05024, 1.22662, 1.35517, 1.53632, 1.69284, 1.8205, 1.95647, 2.09372, 2.21464, 2.32805, 2.37825, 2.43505, 2.4892)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("gun:position:y")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.0581029, 0.11975, -6.53824, -0.0954651, 0.252202, 0, 0, -5.08203, -0.0769299, -0.0693431, 0.0787789, 0.0710098, -6.19152, -0.0262397, -0.265559, 0.0274324, 0.27763, 1.92164, -0.0527596, -0.25149, 0.0257041, 0.122524, 3.19414, -0.0317921, 0.0754557, 0.026342, -0.0625204, -1.12324, -0.0261824, 0.0528064, 0.0233759, 0.170227, -1.74267, -0.0794643, 0.693431, 0.05, 0, -0.4945, -0.035887, -0.0693431, 0.0410138, -0.0693431, -2.50545, -0.0299059, 0.208029, 0.035, 0, -1.10514, -0.0367416, 0.138686, 0.04, 0, 0.919252, -0.0452861, -0.0693436, 0.045, 0, -0.990524, -0.055461, -0.0562222, 0.055461, -0.0281111, -3.23941, -0.080508, 0.00937033, 0.227503, 0.0421288, 0.81428, -0.128235, 0.198413, 0.02, 0, -0.0605664, -0.0206382, -0.156295, 0, 0),
+"times": PackedFloat32Array(0, 0.259415, 0.503507, 0.675992, 0.897698, 1.01262, 1.18593, 1.37196, 1.56079, 1.72314, 1.80915, 1.90563, 1.99389, 2.12012, 2.453, 2.56)
+}
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("gun:rotation")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.0300442, -0.03067, -0.0560846, -0.0234786, 0.00114145, 0.0461405, -0.00224319, 0.0763765, -0.0489322, -0.00103776, 0.0502305, 0.0010653, -0.0257451, -0.0428703, -0.00209084, 0.0459941, 0.00224319, 0.0370643, -0.04465, -0.001839, 0.0615621, 0.00253556, 0.0223075, -0.0259688, -0.00104646, 0.0263158, 0.00106045, 0.0681038, -0.0461406, -0.000714749, 0.05, 0, -0.0111793, -0.0438898, -0.00732524, 0.0507675, 0.00209294, -0.048852, -0.0546851, 0.00126623, 0.07, 0, -0.0097522, -0.116609, 0.000898868, 0.0471365, -0.00337066, -0.191768, -0.0684355, -0.000935309, 0.0316149, 0.003222, 0.179005, -0.0873561, -0.00360654, 0.0589577, 0.00337067, -0.114243, -0.0251003, -0.00225036, 0.0341783, 0.00306424, 0.10485, -0.0623751, 0.0107248, 0.0511463, -0.00879417, -0.0754802, -0.039263, -0.00447003, 0.0538304, 0.00612849, 0.00220969, -0.0321198, -0.00229027, 0.05, 0),
+"times": PackedFloat32Array(0, 0.165942, 0.504854, 0.830777, 1.0263, 1.2089, 1.41493, 1.60901, 1.79178, 1.9378, 2.02949, 2.21235, 2.34948, 2.47831, 2.64315, 2.78277)
+}
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath(".")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.00727684, 0.898472, 1.6746, 1.99443),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"values": [{
+"args": [],
+"method": &"spawnMag"
+}, {
+"args": ["desertEagleMagOut"],
+"method": &"playAudio"
+}, {
+"args": ["desertEagleMagMiss"],
+"method": &"playAudio"
+}, {
+"args": ["desertEagleMagIn"],
+"method": &"playAudio"
+}, {
+"args": ["desertEagleSliderIn"],
+"method": &"playAudio"
+}]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("gun:texture")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("8_3uerl")]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("gun:offset")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(9, -2.5)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("gun:hframes")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [3]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("gun:vframes")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("gun:frame")
+tracks/10/interp = 0
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0, 2.03852, 2.08852),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 2]
+}
+tracks/11/type = "bezier"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("DropMag:rotation")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"handle_modes": PackedInt32Array(2, 2, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.00181972, 0.446485, 2.67891, -0.00181972, -0.00656904, 0.0544201, 0.196453, 1.21813, -0.232019, 0.13509, 0.0248951, -0.0144949, 1.29296, -0.0622831, -0.0249439, 0.111477, 0.0446458, 1.26408, -0.0430716, 0.180926, 0.139547, -0.58618, 0.11666, -0.334556, 0.0791736, 0.100037, -0.0359524, 0.147633, -0.0629875, -0.00225065, 0.0608177, -0.115953, -0.0796052, -0.0710471, -0.0144629, 0, 0),
+"times": PackedFloat32Array(0, 0.0109183, 0.337439, 0.486604, 0.653105, 1.21367, 1.55475, 1.98341)
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("gun/Magazine:visible")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0, 1.81514),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/13/type = "bezier"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("DropMag:position:y")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(-18.6974, -0.25, 0, 0.0739833, 0.517221, -1.61952, 0, 0, 0.061438, 4.52453, -2.61952, -0.0671479, -0.389664, 0.143635, 0.340261, -2.52877, -0.135418, -1.81186, 0.162446, 0.957954, 9.06169, -0.0898903, -0.290942, 0.130548, 0.101831, 5.97735, -0.0647706, -0.145825, 0.116336, 0.0522184, 9.09803, -0.217306, -0.179356, 0.0646058, -0.01826, 8.12582, -0.0393049, -0.01826, 0.0350326, -0.01826, 5.97734, -0.0608687, -0.0422401, 0.0223306, -5.78314, -4.81785, -0.0513023, 1.92771, 0, 0),
+"times": PackedFloat32Array(0.000100133, 0.0732518, 0.330941, 0.538625, 0.788628, 0.946722, 1.25403, 1.38989, 1.68372, 1.78811)
+}
+
+[sub_resource type="Animation" id="Animation_olaap"]
+resource_name = "shoot"
+length = 0.288
+step = 0.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("gun:texture")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("3_yb3et")]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("gun:offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(9, -2.5)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("gun:hframes")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [9]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("gun:vframes")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("gun:frame")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.032, 0.064, 0.096, 0.128, 0.16, 0.192, 0.224, 0.256),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5, 6, 7, 8]
+}
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath(".")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 0.00418917, 0.0101388),
+"transitions": PackedFloat32Array(1, 1, 1),
+"values": [{
+"args": [],
+"method": &"spawnCasing"
+}, {
+"args": ["desertEagleShoot"],
+"method": &"playAudio"
+}, {
+"args": [],
+"method": &"EnableMuzzleFlash"
+}]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("gun/Sight:position")
+tracks/6/interp = 0
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 0.032, 0.064, 0.096, 0.128, 0.16, 0.192, 0.224, 0.256),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(11.5, -10.5), Vector2(10.5, -10.5), Vector2(5.5, -9.5), Vector2(4.5, -10.5), Vector2(4.5, -9.5), Vector2(4.5, -9.5), Vector2(6.5, -10.5), Vector2(10.5, -10.5), Vector2(11.5, -10.5)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("gun/Muzzle:position")
+tracks/7/interp = 0
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 0.032, 0.064, 0.096, 0.128, 0.192, 0.224, 0.256),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(21.5, -8.5), Vector2(20.5, -9.5), Vector2(13.5, -8), Vector2(13.5, -10.5), Vector2(12.5, -8.5), Vector2(15.5, -9.5), Vector2(20.5, -9.5), Vector2(21.5, -8.5)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("gun/Magazine:position")
+tracks/8/interp = 0
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0, 0.032, 0.064, 0.096, 0.128, 0.16, 0.192, 0.224, 0.256),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(4.5, -3.5), Vector2(3.5, -3.5), Vector2(-1.5, -1.5), Vector2(-1.5, -1.5), Vector2(-2.5, -0.5), Vector2(-2.5, -0.5), Vector2(-0.5, -2.5), Vector2(3.5, -3.5), Vector2(4.5, -3.5)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_n7fiq"]
+_data = {
+&"RESET": SubResource("Animation_8b44q"),
+&"idle": SubResource("Animation_pwqwi"),
+&"pickup": SubResource("Animation_v8nh7"),
+&"reload": SubResource("Animation_cd2tv"),
+&"shoot": SubResource("Animation_olaap")
+}
+
+[sub_resource type="Animation" id="Animation_i1m7g"]
+resource_name = "recoil"
+length = 1.6
+step = 0.0
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:recoilRot")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 2, 0, 0, 0, 0, 3, 2),
+"points": PackedFloat32Array(0, 0, 0, 0.0230703, -11.054, -34.4314, -0.0170891, 0.771086, 0.0616075, 9.53674e-07, -32.5037, -0.0230703, -2.27035, 0.0459981, 4.52669, 14.1469, -0.0502216, -0.207081, 0.0606662, -0.135129, -8.21456, -0.0683563, -0.0839055, 0.061259, 0, 5.66497, -0.0555395, -0.0947248, 0.0418683, -0.0839055, -1.27479, -0.0358871, 0.251717, 0.0427227, 0.167811, 0.959444, -0.0408551, 4.76837e-07, 0.0408551, -4.76837e-07, 0, -0.0220651, 0.0735208, 0, 0),
+"times": PackedFloat32Array(0, 0.0357813, 0.173539, 0.373915, 0.568923, 0.720994, 0.856963, 0.994721, 1.15574)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:recoilPosX")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0, 2),
+"points": PackedFloat32Array(0, -0.0264881, -0.0839054, 0.0102534, -2.97135, -8.47736, -0.0555395, 0, 0.0589573, -0.297287, 4.68919, -0.0384504, 0, 0.080508, 0.0387926, -2.42229, -0.0500939, 0, 0.0447267, 0, 1.30276, -0.0606662, 0, 0.0606662, 0, -0.53111, -0.0647249, 0.104882, 0.0647249, -0.104882, 0, -0.0244504, -0.12387, 0, 0),
+"times": PackedFloat32Array(0, 0.0743375, 0.192252, 0.436626, 0.589573, 0.789515, 0.968096)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:recoilPosY")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0, 0, 0),
+"points": PackedFloat32Array(-0.0431957, -0.0294994, 0.698595, 0.0221231, 3.0627, 9.45862, -0.0410138, -0.0623188, 0.0640841, -0.397941, -4.08423, -0.0448712, 0.0947248, 0.140985, 0.839054, 2.10508, -0.0751408, 0, 0.0386283, -0.0473624, -0.874954, -0.056089, 0.131288, 0.056089, -0.131288, 0.729677, -0.0408552, -0.078285, 0.0408552, 0.117427, 0, -0.0465157, 0.0992897, 0.0399457, -0.319696),
+"times": PackedFloat32Array(9.26939e-05, 0.0862999, 0.23079, 0.493782, 0.713838, 0.946416, 1.17005)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_lx8gd"]
+_data = {
+&"recoil": SubResource("Animation_i1m7g")
+}
+
+[node name="deserteagle" type="Node2D"]
+position = Vector2(4, -1)
+script = ExtResource("2_uvhhv")
+recoilPosY = -0.0431957
+metadata/BulletSpawnPoint = NodePath("BulletSpawnPoint")
+metadata/Animator = NodePath("AnimationTree")
+metadata/RecoilAnimator = NodePath("RecoilAnimator")
+
+[node name="gun" type="Sprite2D" parent="."]
+z_index = 1
+texture = ExtResource("1_7h0wv")
+offset = Vector2(9, -2.5)
+metadata/BulletSpawnPoint = NodePath("../BulletSpawnPoint")
+metadata/Animator = NodePath("../AnimationTree")
+metadata/RecoilAnimator = NodePath("../RecoilAnimator")
+
+[node name="Sight" type="Marker2D" parent="gun"]
+position = Vector2(11.5, -10.5)
+gizmo_extents = 1.0
+
+[node name="Test" type="Sprite2D" parent="gun/Sight"]
+visible = false
+texture = ExtResource("4_4yac4")
+offset = Vector2(0, -3)
+
+[node name="Casing" type="Marker2D" parent="gun"]
+position = Vector2(1.00207, -7.99974)
+gizmo_extents = 1.0
+
+[node name="Muzzle" type="Marker2D" parent="gun"]
+position = Vector2(21.5, -8.5)
+gizmo_extents = 1.0
+
+[node name="Test" type="Sprite2D" parent="gun/Muzzle"]
+visible = false
+texture = ExtResource("4_jc4og")
+offset = Vector2(7, 0)
+
+[node name="Magazine" type="Marker2D" parent="gun"]
+z_index = -1
+position = Vector2(4.5, -3.5)
+gizmo_extents = 1.0
+
+[node name="Test" type="Sprite2D" parent="gun/Magazine"]
+visible = false
+texture = ExtResource("6_77uiy")
+offset = Vector2(-1.5, 5.5)
+
+[node name="BulletSpawnPoint" type="Node2D" parent="."]
+position = Vector2(21, -8)
+scale = Vector2(2, 2)
+
+[node name="MuzzleFlash" parent="BulletSpawnPoint" instance=ExtResource("7_p1645")]
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeStateMachine_3a2li")
+anim_player = NodePath("../AnimationPlayer")
+parameters/conditions/reloading = false
+parameters/conditions/shooting = false
+parameters/reload/TimeScale/scale = 1.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_n7fiq")
+}
+
+[node name="RecoilAnimator" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_lx8gd")
+}
+
+[node name="DropMag" type="Marker2D" parent="."]
+visible = false
+
+[node name="MagTexture" type="Sprite2D" parent="DropMag"]
+visible = false

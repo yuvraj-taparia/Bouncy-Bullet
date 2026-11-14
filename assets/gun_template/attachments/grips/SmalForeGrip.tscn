@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/attachments/grips/SmallForeGrip.png" id="1_1ngov"]
+
+[node name="SmallForeGrip" type="Sprite2D"]
+texture = ExtResource("1_1ngov")
+offset = Vector2(0.5, 3)

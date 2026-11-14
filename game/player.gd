@@ -12,26 +12,20 @@ const WALK_SPEED := 100.0
 const GROUND_ACCEL := 900.0
 const AIR_ACCEL := 260.0
 const MAX_SPEED := 620.0
-const NO_ANIM_RELOAD_TIME := 0.35
-
-const CasingScript := preload("res://game/casing.gd")
-
 @onready var body = $Body
 @onready var gun: Node2D = $Gun
-@onready var gun_sprite: AnimatedSprite2D = $Gun/Sprite
-@onready var muzzle: Marker2D = $Gun/Muzzle
 @onready var camera: Camera2D = $Camera2D
 
 ## Which gun to carry; empty means the one equipped in the shop.
 @export var gun_id: StringName = &""
 
 var gun_data: Dictionary
+var rig: GunRig
 var max_ammo := 3
 var ammo := 3
 var frozen := false
 var _cooldown := 0.0
 var _reloading := false
-var _reload_timer := 0.0
 var _shake := 0.0
 var _was_on_floor := true
 
@@ -44,11 +38,10 @@ func _ready() -> void:
 	gun_data = Guns.get_gun(gun_id)
 	max_ammo = gun_data.ammo
 	ammo = max_ammo
-	gun_sprite.sprite_frames = Guns.frames(gun_id)
-	gun_sprite.offset = gun_data.grip
-	muzzle.position = gun_data.muzzle
-	gun_sprite.play(&"idle")
-	gun_sprite.animation_finished.connect(_on_gun_animation_finished)
+	rig = GunRig.new()
+	gun.add_child(rig)
+	rig.setup(gun_data, get_parent())
+	rig.reload_finished.connect(_finish_reload)
 
 
 func _physics_process(delta: float) -> void:
@@ -80,10 +73,6 @@ func _physics_process(delta: float) -> void:
 	_was_on_floor = on_floor
 	if on_floor and ammo < max_ammo and not _reloading:
 		_start_reload()
-	if _reloading and not gun_sprite.sprite_frames.has_animation(&"reload"):
-		_reload_timer -= delta
-		if _reload_timer <= 0.0:
-			_finish_reload()
 
 	_update_shake(delta)
 
@@ -109,10 +98,10 @@ func _shoot(aim: Vector2) -> void:
 	velocity += -aim * float(gun_data.recoil)
 	velocity = velocity.limit_length(MAX_SPEED)
 
-	gun_sprite.play(&"shoot")
-	gun_sprite.frame = 0
+	# The gun scene's shoot animation shows the muzzle flash and ejects the casing.
+	rig.shoot()
 	var world := get_parent()
-	SpriteSheets.spawn_fx(world, SpriteSheets.muzzle_flash(), muzzle.global_position, aim.angle(), Vector2(12, 0))
+	var spawn_at := rig.spawn_point.global_position
 
 	var pellets: int = gun_data.pellets
 	var spread: float = gun_data.spread
@@ -127,14 +116,7 @@ func _shoot(aim: Vector2) -> void:
 		bullet.lifetime = gun_data.lifetime
 		bullet.tint = gun_data.bullet_color
 		world.add_child(bullet)
-		bullet.global_position = muzzle.global_position
-
-	var casing := Sprite2D.new()
-	casing.set_script(CasingScript)
-	world.add_child(casing)
-	casing.global_position = gun.global_position
-	casing.velocity = Vector2(-aim.x * 60.0 + randf_range(-20, 20), -150.0 + randf_range(-30, 0))
-	casing.spin = randf_range(-20.0, 20.0)
+		bullet.global_position = spawn_at
 
 	_squash(Vector2(0.85, 1.15))
 	_shake = 3.0
@@ -142,28 +124,19 @@ func _shoot(aim: Vector2) -> void:
 	fired.emit()
 
 
+## Landed with shots missing: play the gun's reload (mag drops out, new one
+## slides in; the shotgun loads one shell per missing shot) and refill.
 func _start_reload() -> void:
 	_reloading = true
-	if gun_sprite.sprite_frames.has_animation(&"reload"):
-		gun_sprite.play(&"reload")
-	else:
-		# The shotgun and rifle sprites have no reload strip: give the gun a
-		# quick spin-tilt instead and refill after a short delay.
-		_reload_timer = NO_ANIM_RELOAD_TIME
-		gun_sprite.rotation = -0.6
-		create_tween().tween_property(gun_sprite, "rotation", 0.0, NO_ANIM_RELOAD_TIME).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	rig.reload(gun_data.reload_time, max_ammo - ammo)
 
 
 func _finish_reload() -> void:
+	if not _reloading:
+		return
 	_reloading = false
 	ammo = max_ammo
 	ammo_changed.emit(ammo, max_ammo)
-
-
-func _on_gun_animation_finished() -> void:
-	if gun_sprite.animation == &"reload" and _reloading:
-		_finish_reload()
-	gun_sprite.play(&"idle")
 
 
 ## Called by a ricocheting bullet that comes back and hits us.
@@ -178,7 +151,7 @@ func respawn(at: Vector2) -> void:
 	velocity = Vector2.ZERO
 	ammo = max_ammo
 	_reloading = false
-	gun_sprite.play(&"idle")
+	rig.cancel_reload()
 	camera.reset_smoothing()
 	ammo_changed.emit(ammo, max_ammo)
 

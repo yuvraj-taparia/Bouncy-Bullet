@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/pixel_art_guns/sprites/particles/casings/PistolCasing.png" id="1_or5xc"]
+[ext_resource type="Script" path="res://assets/gun_template/scripts/casing.gd" id="2_wn8mb"]
+
+[node name="Casing" type="Sprite2D"]
+z_index = -1
+texture = ExtResource("1_or5xc")
+script = ExtResource("2_wn8mb")
