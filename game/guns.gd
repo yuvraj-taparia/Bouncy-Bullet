@@ -25,10 +25,10 @@ const ORDER: Array[StringName] = [&"pistol", &"shotgun", &"bounce_rifle"]
 ## Every gun.
 const ALL: Array[StringName] = [&"glock", &"pistol", &"shotgun", &"bounce_rifle"]
 
-## Every gun's kick is multiplied by this (0.5 = half recoil, both the
-## horizontal and vertical push). The per-gun "recoil" values below keep
+## Every gun's kick is multiplied by this (1.0 = normal; 0.5 would halve both
+## the horizontal and vertical push). The per-gun "recoil" values below keep
 ## each gun's feel relative to the others.
-const RECOIL_SCALE := 0.5
+const RECOIL_SCALE := 1.0
 
 const DATA := {
 	&"pistol": {

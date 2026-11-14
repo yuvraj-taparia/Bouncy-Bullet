@@ -8,7 +8,7 @@ signal ammo_changed(ammo: int, max_ammo: int)
 signal fired
 
 ## Gravity multiplier for the player and falling objects (shells, magazines).
-const GRAVITY_SCALE := 1.5
+const GRAVITY_SCALE := 1.25
 const GRAVITY := 900.0 * GRAVITY_SCALE
 ## Fastest falling speed, so long drops stay readable with the stronger gravity.
 const MAX_FALL_SPEED := 620.0
