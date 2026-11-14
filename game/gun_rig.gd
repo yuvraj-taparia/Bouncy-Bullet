@@ -74,6 +74,18 @@ func _process(delta: float) -> void:
 				_start_reload_step()
 
 
+## Replays the "pull out the gun" animation.
+func pickup() -> void:
+	cancel_reload()
+	_play(&"pickup", data.pickup_speed)
+
+
+## Gun sprite's centre in this rig's local space (attachments not counted).
+func visual_center() -> Vector2:
+	var sprite: Sprite2D = gun.get_node("gun")
+	return gun.posOffset + sprite.get_rect().get_center()
+
+
 func shoot() -> void:
 	cancel_reload()
 	var h: Dictionary = data.handling

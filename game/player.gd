@@ -114,7 +114,6 @@ func _shoot(aim: Vector2) -> void:
 		bullet.shooter = self
 		bullet.max_bounces = gun_data.bounces
 		bullet.lifetime = gun_data.lifetime
-		bullet.tint = gun_data.bullet_color
 		world.add_child(bullet)
 		bullet.global_position = spawn_at
 

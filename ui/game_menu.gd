@@ -32,6 +32,10 @@ const TILE_SIZE := Vector2(76, 74)
 const LEVELS_BACK := Rect2(412, 462, 198, 68)
 const SHOP_BUY := [Rect2(290, 380, 97, 55), Rect2(462, 380, 98, 55), Rect2(635, 380, 97, 55)]
 const SHOP_BACK := Rect2(412, 462, 198, 72)
+## Inside of each card's picture box; the real pack gun is shown here.
+const SHOP_ART := [Rect2(266, 171, 147, 107), Rect2(439, 171, 146, 107), Rect2(612, 171, 146, 107)]
+const SHOP_ART_BG := Color("191d2f")
+const SHOP_ART_SCALE := [3.0, 2.0, 2.4]
 const TITLE_LOGO := Vector2(500, 230)
 
 @onready var ui: Control = $UI
@@ -46,7 +50,9 @@ var _coins: CoinCounter
 var _level_tiles: Array[PopButton] = []
 var _level_info: Label
 var _shop_buttons: Array[PopButton] = []
+var _shop_rigs: Array[GunRig] = []
 var _shop_info: Label
+var _shop_using: Label
 var _menu_buttons: Array[PopButton] = []
 var _busy := false
 
@@ -151,9 +157,17 @@ func _build_level_select() -> void:
 func _build_shop() -> void:
 	var stage := _make_stage("shop", SHOP_IMG)
 	for i in Guns.ORDER.size():
+		_shop_rigs.append(_add_card_gun(stage, i))
 		var b := _add_button(stage, SHOP_IMG, SHOP_BUY[i], _on_shop_pressed.bind(i))
 		b.focus_entered.connect(_show_gun_info.bind(i))
+		b.focus_entered.connect(func(): _shop_rigs[i].shoot())
 		_shop_buttons.append(b)
+
+	_shop_using = PixelArt.label("", 14, PixelArt.GOLD)
+	_shop_using.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_shop_using.position = Vector2(760, 58)
+	_shop_using.size = Vector2(250, 22)
+	stage.add_child(_shop_using)
 	var back := _add_button(stage, SHOP_IMG, SHOP_BACK, _show.bind("main"))
 	back.focus_entered.connect(func(): _shop_info.text = "")
 
@@ -163,6 +177,30 @@ func _build_shop() -> void:
 	_shop_info.size = Vector2(580, 22)
 	stage.add_child(_shop_info)
 	_focus_default["shop"] = _shop_buttons[0]
+
+
+## Covers the painted gun on shop card `i` with the real animated pack gun.
+func _add_card_gun(stage: Control, i: int) -> GunRig:
+	var box := Control.new()
+	box.position = SHOP_ART[i].position
+	box.size = SHOP_ART[i].size
+	box.clip_contents = true
+	box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stage.add_child(box)
+	var bg := ColorRect.new()
+	bg.color = SHOP_ART_BG
+	bg.size = box.size
+	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	box.add_child(bg)
+
+	var holder := Node2D.new()
+	holder.scale = Vector2.ONE * SHOP_ART_SCALE[i]
+	box.add_child(holder)
+	var rig := GunRig.new()
+	holder.add_child(rig)
+	rig.setup(Guns.get_gun(Guns.ORDER[i]), null)  # no casings flying around the shop
+	holder.position = box.size * 0.5 - rig.visual_center() * holder.scale
+	return rig
 
 
 func _build_controls() -> void:
@@ -238,6 +276,8 @@ func _show(screen_name: String) -> void:
 		_refresh_levels()
 	elif screen_name == "shop":
 		_refresh_shop()
+		for rig in _shop_rigs:
+			rig.pickup()
 	var stage: Control = screens[screen_name]
 	stage.modulate.a = 0.0
 	stage.create_tween().tween_property(stage, "modulate:a", 1.0, 0.15)
@@ -265,15 +305,11 @@ func _title_to_menu() -> void:
 	var t := create_tween()
 	t.tween_property(bullet, "position", TITLE_LOGO, 0.16)
 	t.tween_callback(func():
-		var spark := AnimatedSprite2D.new()
-		spark.sprite_frames = SpriteSheets.impact()
+		var spark: Node2D = Bullet.IMPACT.instantiate()
 		spark.scale = Vector2(4, 4)
 		spark.position = TITLE_LOGO
 		spark.rotation = PI
-		spark.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		spark.animation_finished.connect(spark.queue_free)
 		stage.add_child(spark)
-		spark.play(&"play")
 		bullet.rotation = (Vector2(1120, -120) - TITLE_LOGO).angle()
 		# Zoom punch around the screen centre.
 		var base := stage.scale
@@ -332,6 +368,7 @@ func _on_level_pressed(i: int) -> void:
 
 
 func _start_level(i: int) -> void:
+	_remove_game()  # never run two levels at once
 	active_game = GAME.instantiate()
 	active_game.level_scene = LEVELS[i]
 	active_game.level_index = i
@@ -373,6 +410,7 @@ func _refresh_shop() -> void:
 			b.face = PopButton.Face.EQUIPPED
 		else:
 			b.face = PopButton.Face.EQUIP
+	_shop_using.text = "USING: %s" % Guns.get_gun(SaveData.equipped).name.to_upper()
 	_coins.queue_redraw()
 
 
@@ -382,22 +420,32 @@ func _show_gun_info(i: int) -> void:
 	var pellets := "  ·  %d PELLETS" % gun.pellets if gun.pellets > 1 else ""
 	_shop_info.text = "%s  ·  KICK %s%s  ·  %d SHOTS%s  ·  %d BOUNCES" % [
 		gun.name.to_upper(), "|".repeat(kick), " ".repeat(4 - kick), gun.ammo, pellets, gun.bounces]
+	if SaveData.equipped == Guns.ORDER[i]:
+		_shop_info.text = "CLICK AGAIN TO SWITCH BACK TO YOUR %s" % Guns.get_gun(SaveData.STARTER).name.to_upper()
 
 
 func _on_shop_pressed(i: int) -> void:
 	var id: StringName = Guns.ORDER[i]
 	var b := _shop_buttons[i]
-	if SaveData.owns(id):
+	if SaveData.owns(id) and SaveData.equipped == id:
+		# Clicking EQUIPPED puts the free starter Glock back in your hands.
+		SaveData.equip(SaveData.STARTER)
+		b.hop()
+		_float_text(screens["shop"], "USING GLOCK", b.position + Vector2(b.size.x * 0.5, -8), PixelArt.GOLD)
+	elif SaveData.owns(id):
 		SaveData.equip(id)
 		b.hop()
+		_shop_rigs[i].pickup()
 	elif SaveData.buy(id):
 		b.hop()
+		_shop_rigs[i].pickup()
 		_float_text(screens["shop"], "BOUGHT!", b.position + Vector2(b.size.x * 0.5, -8), Color("8ef07a"))
 	else:
 		b.shake()
 		var need: int = Guns.get_gun(id).price - SaveData.coins
 		_float_text(screens["shop"], "NEED %d MORE" % need, b.position + Vector2(b.size.x * 0.5, -8), Color("ff6b5a"))
 	_refresh_shop()
+	_show_gun_info(i)
 
 
 func _float_text(stage: Control, text: String, at: Vector2, color: Color) -> void:

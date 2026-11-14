@@ -20,16 +20,17 @@ const TEMPLATE := "res://assets/gun_template/"
 const SPRITES := "res://assets/pixel_art_guns/sprites/"
 
 ## Guns sold on the three painted shop cards, in card order.
+## The Glock is the free starter (SaveData.STARTER), so it has no card.
 const ORDER: Array[StringName] = [&"pistol", &"shotgun", &"bounce_rifle"]
-## Every gun, including ones not on a shop card yet.
-const ALL: Array[StringName] = [&"pistol", &"shotgun", &"bounce_rifle", &"glock"]
+## Every gun.
+const ALL: Array[StringName] = [&"glock", &"pistol", &"shotgun", &"bounce_rifle"]
 
 const DATA := {
 	&"pistol": {
 		"name": "Pistol", "price": 50,
 		"recoil": 360.0, "ammo": 3, "cooldown": 0.22,
 		"pellets": 1, "spread": 0.0, "bounces": 3, "lifetime": 1.6,
-		"reload_time": 0.6, "bullet_color": Color(1, 1, 1),
+		"reload_time": 0.6,
 		"scene": TEMPLATE + "guns/deserteagle.tscn",
 		"attachments": {
 			"Sight": TEMPLATE + "attachments/sights/DesertEagleSight.tscn",
@@ -44,7 +45,7 @@ const DATA := {
 		"name": "Shotgun", "price": 150,
 		"recoil": 540.0, "ammo": 2, "cooldown": 0.45,
 		"pellets": 5, "spread": 0.5, "bounces": 1, "lifetime": 0.45,
-		"reload_time": 0.9, "bullet_color": Color(1, 0.8, 0.55),
+		"reload_time": 0.9,
 		"scene": TEMPLATE + "guns/m3.tscn",
 		"attachments": {},
 		"mag": "",
@@ -56,7 +57,7 @@ const DATA := {
 		"name": "Bounce Rifle", "price": 300,
 		"recoil": 190.0, "ammo": 6, "cooldown": 0.09,
 		"pellets": 1, "spread": 0.06, "bounces": 6, "lifetime": 2.6,
-		"reload_time": 0.7, "bullet_color": Color(0.55, 1, 0.45),
+		"reload_time": 0.7,
 		"scene": TEMPLATE + "guns/ak47.tscn",
 		"attachments": {
 			"Stock": TEMPLATE + "attachments/stocks/AK47NormalStock.tscn",
@@ -69,10 +70,10 @@ const DATA := {
 		"pickup_speed": 3.0, "shoot_speed": 1.5, "recoil_speed": 2.5,
 	},
 	&"glock": {
-		"name": "Glock", "price": 100,
+		"name": "Glock", "price": 0,
 		"recoil": 260.0, "ammo": 5, "cooldown": 0.12,
 		"pellets": 1, "spread": 0.04, "bounces": 2, "lifetime": 1.4,
-		"reload_time": 0.5, "bullet_color": Color(1, 0.95, 0.8),
+		"reload_time": 0.5,
 		"scene": TEMPLATE + "guns/glock.tscn",
 		"attachments": {
 			"Sight": TEMPLATE + "attachments/sights/GlockSight.tscn",
@@ -87,4 +88,4 @@ const DATA := {
 
 
 static func get_gun(id: StringName) -> Dictionary:
-	return DATA.get(id, DATA[&"pistol"])
+	return DATA.get(id, DATA[&"glock"])

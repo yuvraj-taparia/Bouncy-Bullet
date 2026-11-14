@@ -12,7 +12,6 @@ var direction := Vector2.RIGHT
 var shooter: CharacterBody2D
 var max_bounces := 3
 var lifetime := 1.6
-var tint := Color.WHITE
 var bounces := 0
 var _age := 0.0
 var _sprite: Sprite2D
@@ -24,14 +23,14 @@ func _ready() -> void:
 	_sprite.texture = load(SpriteSheets.GUNS + "bullet.png")
 	_sprite.hframes = 2
 	_sprite.frame = 1
-	_sprite.scale = Vector2(0.75, 0.75)
-	_sprite.modulate = tint
+	# Same look as the gun pack's prefabs/bullet.tscn: bullet sprite and a
+	# soft yellow glow, both at 1.5x.
+	_sprite.scale = Vector2(1.5, 1.5)
 	add_child(_sprite)
-	# Soft glow, as in the gun pack's bullet prefab.
 	var glow := Sprite2D.new()
 	glow.texture = LIGHT
-	glow.self_modulate = Color(tint.r, tint.g * 0.89, tint.b * 0.25, 0.3)
-	glow.scale = Vector2(0.75, 0.75)
+	glow.self_modulate = Color(1, 0.8875, 0.25, 0.305882)
+	glow.scale = Vector2(1.5, 1.5)
 	add_child(glow)
 	rotation = direction.angle()
 
@@ -39,7 +38,6 @@ func _ready() -> void:
 ## The pack's impact spark, pointing away from the surface that was hit.
 func _spark(at: Vector2, angle: float) -> void:
 	var fx: Node2D = IMPACT.instantiate()
-	fx.scale = Vector2.ONE
 	get_parent().add_child(fx)
 	fx.global_position = at
 	fx.global_rotation = angle

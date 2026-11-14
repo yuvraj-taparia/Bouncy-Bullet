@@ -8,9 +8,11 @@ const COIN_VALUE := 10        ## each coin picked up in a level
 const CLEAR_BONUS := 20       ## every time you reach the Safezone
 const FIRST_CLEAR_BONUS := 30 ## extra the first time you clear a level
 
+const STARTER: StringName = &"glock"  ## free gun everyone owns
+
 static var coins := 0
-static var owned: Array[StringName] = [&"pistol"]
-static var equipped: StringName = &"pistol"
+static var owned: Array[StringName] = [STARTER]
+static var equipped: StringName = STARTER
 static var cleared: Array[int] = []
 static var _loaded := false
 
@@ -24,13 +26,13 @@ static func ensure_loaded() -> void:
 		return
 	coins = cfg.get_value("player", "coins", 0)
 	owned.clear()
-	for id in cfg.get_value("player", "owned", ["pistol"]):
+	for id in cfg.get_value("player", "owned", [String(STARTER)]):
 		owned.append(StringName(id))
-	if not owned.has(&"pistol"):
-		owned.append(&"pistol")
-	equipped = StringName(cfg.get_value("player", "equipped", "pistol"))
-	if not owned.has(equipped):
-		equipped = &"pistol"
+	if not owned.has(STARTER):
+		owned.append(STARTER)  # older saves predate the free Glock
+	equipped = StringName(cfg.get_value("player", "equipped", String(STARTER)))
+	if not owned.has(equipped) or not Guns.DATA.has(equipped):
+		equipped = STARTER
 	cleared.clear()
 	for i in cfg.get_value("player", "cleared", []):
 		cleared.append(int(i))
