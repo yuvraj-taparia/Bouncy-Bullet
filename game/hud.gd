@@ -88,7 +88,8 @@ func set_coins(collected: int, total: int) -> void:
 	_coin_label.text = "Coins %d/%d" % [collected, total]
 
 
-func show_win(seconds: float, shots: int, splashes: int) -> void:
+func show_win(seconds: float, shots: int, splashes: int, coins: int, saved: bool) -> void:
 	_hint.visible = false
 	_win.visible = true
-	_win.text = "SAFEZONE REACHED!\n\n%.1f seconds   ·   %d shots   ·   %d splashes\n\nPress R to play again" % [seconds, shots, splashes]
+	var reward := "+%d Coins" % coins if saved else "Coin-Guthaben konnte nicht gespeichert werden"
+	_win.text = "SAFEZONE REACHED!\n\n%.1f seconds   ·   %d shots   ·   %d splashes\n%s\n\nPress R to play again" % [seconds, shots, splashes, reward]

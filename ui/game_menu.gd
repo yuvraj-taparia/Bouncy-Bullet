@@ -6,6 +6,7 @@ const LEVELS: Array[PackedScene] = [
 	preload("res://maps/highlands/highlands.tscn"),
 ]
 const GAME := preload("res://game/game.tscn")
+const COIN_WALLET := preload("res://game/coin_wallet.gd")
 
 @onready var menu: Control = $Menu
 @onready var level_buttons: ButtonGroup = %Grassland.button_group
@@ -13,6 +14,7 @@ const GAME := preload("res://game/game.tscn")
 @onready var back_button: Button = %Back
 @onready var preview_viewport: SubViewport = %Viewport
 @onready var preview_camera: Camera2D = %Viewport/Camera2D
+@onready var coin_balance: Label = %CoinBalance
 var active_game: Node2D
 var preview_level: Node2D
 
@@ -20,6 +22,7 @@ var preview_level: Node2D
 func _ready() -> void:
 	level_buttons.pressed.connect(_show_preview)
 	_show_preview(level_buttons.get_pressed_button())
+	_update_coin_balance()
 	play_button.grab_focus()
 
 
@@ -57,6 +60,7 @@ func _start_level() -> void:
 func _return_to_menu() -> void:
 	_remove_game()
 	back_button.hide()
+	_update_coin_balance()
 	menu.show()
 	play_button.grab_focus()
 
@@ -70,3 +74,8 @@ func _remove_game() -> void:
 	remove_child(active_game)
 	active_game.queue_free()
 	active_game = null
+
+
+func _update_coin_balance() -> void:
+	var balance := COIN_WALLET.balance()
+	coin_balance.text = "Guthaben: %d Coins" % balance if balance >= 0 else "Guthaben nicht lesbar"

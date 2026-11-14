@@ -4,6 +4,8 @@ extends Node2D
 
 signal restart_requested
 
+const COIN_WALLET := preload("res://game/coin_wallet.gd")
+
 @export var level_scene: PackedScene
 
 var level: Node2D
@@ -76,4 +78,9 @@ func _on_safezone_entered(body: Node2D) -> void:
 		return
 	_won = true
 	player.frozen = true
-	hud.show_win(_time, _shots, _splashes)
+	_finish_run.call_deferred()
+
+
+func _finish_run() -> void:
+	var saved := _coins_collected == 0 or COIN_WALLET.deposit(_coins_collected) == OK
+	hud.show_win(_time, _shots, _splashes, _coins_collected, saved)
