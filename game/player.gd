@@ -60,6 +60,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	var wants_to_shoot := _update_trigger()
 	var aim := Vector2.LEFT
 	if _aim_with_mouse:
 		aim = (get_global_mouse_position() - gun.global_position).normalized()
@@ -79,8 +80,7 @@ func _physics_process(delta: float) -> void:
 	# Hold left click to keep firing at the gun's own fire rate (one shot per
 	# physics frame at most). Releasing, or running out of ammo, stops it.
 	_cooldown -= delta
-	_update_trigger()
-	if _trigger_held and ammo > 0 and _cooldown <= 0.0:
+	if wants_to_shoot and ammo > 0 and _cooldown <= 0.0:
 		# While the trigger stays held, carry over the part of a frame the shot
 		# was late so fast guns keep their real fire rate. More than a frame
 		# late means the gun was idle: start fresh, no banked shots.
@@ -102,12 +102,20 @@ func _physics_process(delta: float) -> void:
 	_update_shake(delta)
 
 
-func _update_trigger() -> void:
-	if frozen or not Input.is_action_pressed(&"shoot"):
+func _update_trigger() -> bool:
+	if frozen:
 		_trigger_held = false
+		return false
 	elif Input.is_action_just_pressed(&"shoot"):
 		# A click on an on-screen button (like MENU) is not a shot.
-		_trigger_held = not get_viewport().gui_get_hovered_control() is BaseButton
+		var accepted := not get_viewport().gui_get_hovered_control() is BaseButton
+		_trigger_held = accepted and Input.is_action_pressed(&"shoot")
+		if accepted:
+			_aim_with_mouse = true
+		return accepted
+
+	_trigger_held = _trigger_held and Input.is_action_pressed(&"shoot")
+	return _trigger_held
 
 
 func _point_gun(aim: Vector2) -> void:
