@@ -64,6 +64,11 @@ var frog_hop_time := FROG_HOP_DURATION
 func _ready() -> void:
 	origin = position
 	species = animation_path.get_file().get_basename()
+	if not PATROLS.has(species) or not hitbox.shape is RectangleShape2D:
+		monitoring = false
+		collision_layer = 0
+		set_physics_process(false)
+		return
 	if ResourceLoader.exists(animation_path, "SpriteFrames"):
 		sprite.sprite_frames = load(animation_path)
 	else:

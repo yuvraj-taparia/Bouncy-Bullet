@@ -84,12 +84,25 @@ static func _save() -> Error:
 	_config.set_value("player", "cleared_campaign", cleared)
 	_config.set_value("player", "legacy_wallet_imported", _wallet_imported)
 	var temp_path := PATH + ".tmp"
-	var error := _config.save(temp_path)
+	var error := _write_save(temp_path)
 	if error == OK:
 		error = DirAccess.rename_absolute(temp_path, PATH)
 	if error != OK:
 		push_warning("Could not save game progress: %s" % error_string(error))
 	return error
+
+
+static func _write_save(path: String) -> Error:
+	var contents := _config.encode_to_text().to_utf8_buffer()
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		return FileAccess.get_open_error()
+	var written := file.store_buffer(contents)
+	file.close()
+	# A buffered write can fail during close.
+	if not written or FileAccess.get_file_as_bytes(path) != contents:
+		return ERR_FILE_CANT_WRITE
+	return OK
 
 
 static func owns(id: StringName) -> bool:
