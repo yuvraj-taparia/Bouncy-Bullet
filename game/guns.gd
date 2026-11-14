@@ -33,7 +33,7 @@ const RECOIL_SCALE := 1.0
 const DATA := {
 	&"pistol": {
 		"name": "Pistol", "price": 50,
-		"recoil": 360.0, "ammo": 3, "cooldown": 0.22,
+		"recoil": 360.0, "ammo": 8, "cooldown": 0.22,
 		"pellets": 1, "spread": 0.0, "bounces": 3, "lifetime": 1.6,
 		"reload_time": 0.6,
 		"scene": TEMPLATE + "guns/deserteagle.tscn",
@@ -48,8 +48,10 @@ const DATA := {
 	},
 	&"shotgun": {
 		"name": "Shotgun", "price": 150,
-		"recoil": 540.0, "ammo": 2, "cooldown": 0.45,
-		"pellets": 5, "spread": 0.5, "bounces": 1, "lifetime": 0.45,
+		# Overpowered on purpose: lots of shells, a wide 8-pellet blast that
+		# ricochets 3 times and reaches further, and a faster pump.
+		"recoil": 540.0, "ammo": 6, "cooldown": 0.3,
+		"pellets": 8, "spread": 0.6, "bounces": 3, "lifetime": 0.9,
 		"reload_time": 0.9,
 		"scene": TEMPLATE + "guns/m3.tscn",
 		"attachments": {},
@@ -60,7 +62,7 @@ const DATA := {
 	},
 	&"bounce_rifle": {
 		"name": "Bounce Rifle", "price": 300,
-		"recoil": 190.0, "ammo": 6, "cooldown": 0.09,
+		"recoil": 190.0, "ammo": 12, "cooldown": 0.09,
 		"pellets": 1, "spread": 0.06, "bounces": 6, "lifetime": 2.6,
 		"reload_time": 0.7,
 		"scene": TEMPLATE + "guns/ak47.tscn",
@@ -76,7 +78,7 @@ const DATA := {
 	},
 	&"glock": {
 		"name": "Glock", "price": 0,
-		"recoil": 260.0, "ammo": 5, "cooldown": 0.12,
+		"recoil": 260.0, "ammo": 6, "cooldown": 0.12,
 		"pellets": 1, "spread": 0.04, "bounces": 2, "lifetime": 1.4,
 		"reload_time": 0.5,
 		"scene": TEMPLATE + "guns/glock.tscn",

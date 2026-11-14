@@ -5,7 +5,7 @@ const TEXT := Color(1, 0.97, 0.84)
 const OUTLINE := Color(0.1, 0.13, 0.23)
 
 var _ammo_icons: Array[TextureRect] = []
-var _ammo_box: HBoxContainer
+var _ammo_box: GridContainer
 var _time_label: Label
 var _coin_label: Label
 var _hint: Label
@@ -19,9 +19,11 @@ func _ready() -> void:
 	root.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	add_child(root)
 
-	_ammo_box = HBoxContainer.new()
+	# Rows of up to 6 bullets, so big magazines stay left of the MENU button.
+	_ammo_box = GridContainer.new()
 	_ammo_box.position = Vector2(20, 16)
-	_ammo_box.add_theme_constant_override("separation", 6)
+	_ammo_box.add_theme_constant_override("h_separation", 4)
+	_ammo_box.add_theme_constant_override("v_separation", 3)
 	root.add_child(_ammo_box)
 
 	_time_label = _make_label(root, 22)
@@ -79,10 +81,11 @@ func _build_ammo_icons(count: int) -> void:
 	var bullet_icon := AtlasTexture.new()
 	bullet_icon.atlas = load(SpriteSheets.GUNS + "bullet.png")
 	bullet_icon.region = Rect2(22, 2, 22, 12)
+	_ammo_box.columns = clampi(count, 1, 6)
 	for i in count:
 		var icon := TextureRect.new()
 		icon.texture = bullet_icon
-		icon.custom_minimum_size = Vector2(44, 24) if count <= 4 else Vector2(30, 16)
+		icon.custom_minimum_size = Vector2(44, 24) if count <= 3 else Vector2(24, 13)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		_ammo_box.add_child(icon)
