@@ -5,11 +5,17 @@
 [ext_resource type="PackedScene" path="res://game/player.tscn" id="3_player"]
 [ext_resource type="Script" path="res://game/hud.gd" id="4_hud"]
 [ext_resource type="Script" path="res://game/crosshair.gd" id="5_crosshair"]
+[ext_resource type="AudioStream" path="res://assets/audio/level_music.mp3" id="6_music"]
 
 [node name="Game" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_game")
 level_scene = ExtResource("2_grassland")
+
+[node name="LevelMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_music")
+volume_db = -14.0
+autoplay = true
 
 [node name="Player" parent="." instance=ExtResource("3_player")]
 
