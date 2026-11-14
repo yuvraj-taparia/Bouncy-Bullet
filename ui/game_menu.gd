@@ -12,6 +12,7 @@ const GAME := preload("res://game/game.tscn")
 @onready var play_button: Button = %Play
 @onready var back_button: Button = %Back
 @onready var preview_viewport: SubViewport = %Viewport
+@onready var preview_camera: Camera2D = %Viewport/Camera2D
 var active_game: Node2D
 var preview_level: Node2D
 
@@ -29,6 +30,12 @@ func _show_preview(selected: BaseButton) -> void:
 	preview_level = LEVELS[selected.get_index()].instantiate()
 	preview_level.process_mode = Node.PROCESS_MODE_DISABLED
 	preview_viewport.add_child(preview_level)
+	var terrain: TileMapLayer = preview_level.get_node("Terrain")
+	var tile_width := terrain.tile_set.tile_size.x
+	var bounds := terrain.get_used_rect()
+	var width := float(bounds.size.x * tile_width)
+	preview_camera.position.x = (bounds.position.x + bounds.size.x * 0.5) * tile_width
+	preview_camera.zoom = Vector2.ONE * minf(0.9, preview_viewport.size.x / (width + 64.0))
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -23,6 +23,8 @@ func _ready() -> void:
 	add_child(level)
 	move_child(level, 0)
 	player.global_position = _spawn_point()
+	var terrain: TileMapLayer = level.get_node("Terrain")
+	player.camera.limit_right = terrain.get_used_rect().end.x * terrain.tile_set.tile_size.x + 76
 	player.camera.reset_smoothing()
 	player.ammo_changed.connect(hud.set_ammo)
 	player.fired.connect(func(): _shots += 1)
