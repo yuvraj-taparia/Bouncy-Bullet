@@ -3,8 +3,6 @@
 [ext_resource type="Script" path="res://ui/game_menu.gd" id="1_menu"]
 [ext_resource type="FontFile" path="res://ui/fonts/Silkscreen-Regular.ttf" id="2_font"]
 
-[sub_resource type="ButtonGroup" id="ButtonGroup_levels"]
-
 [sub_resource type="World2D" id="World2D_preview"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_row"]
@@ -189,83 +187,20 @@ theme_override_colors/font_color = Color(0.73, 0.91, 0.38, 1)
 theme_override_font_sizes/font_size = 16
 text = "Level auswählen"
 
-[node name="Levels" type="VBoxContainer" parent="Menu"]
+[node name="LevelScroll" type="ScrollContainer" parent="Menu"]
 layout_mode = 0
-offset_left = 48.0
-offset_top = 255.0
-offset_right = 464.0
-theme_override_constants/separation = 8
+offset_left = 44.0
+offset_top = 251.0
+offset_right = 476.0
+offset_bottom = 478.0
+follow_focus = true
+horizontal_scroll_mode = 0
 
-[node name="Grassland" type="Button" parent="Menu/Levels"]
+[node name="Levels" type="VBoxContainer" parent="Menu/LevelScroll"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 62)
 layout_mode = 2
-mouse_default_cursor_shape = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_levels")
-text = "GrassLand"
-alignment = 0
-button_pressed = true
-
-[node name="Difficulty" type="Label" parent="Menu/Levels/Grassland"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 180.0
-offset_right = -15.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.76, 0.84, 0.76, 1)
-theme_override_font_sizes/font_size = 15
-text = "Leicht"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="RiverCrossing" type="Button" parent="Menu/Levels"]
-custom_minimum_size = Vector2(0, 62)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_levels")
-text = "Flusskette"
-alignment = 0
-
-[node name="Difficulty" type="Label" parent="Menu/Levels/RiverCrossing"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 180.0
-offset_right = -15.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.76, 0.84, 0.76, 1)
-theme_override_font_sizes/font_size = 15
-text = "Mittel"
-horizontal_alignment = 2
-vertical_alignment = 1
-
-[node name="Highlands" type="Button" parent="Menu/Levels"]
-custom_minimum_size = Vector2(0, 62)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-toggle_mode = true
-button_group = SubResource("ButtonGroup_levels")
-text = "Hochplateau"
-alignment = 0
-
-[node name="Difficulty" type="Label" parent="Menu/Levels/Highlands"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 180.0
-offset_right = -15.0
-mouse_filter = 2
-theme_override_colors/font_color = Color(0.76, 0.84, 0.76, 1)
-theme_override_font_sizes/font_size = 15
-text = "Schwer"
-horizontal_alignment = 2
-vertical_alignment = 1
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
 
 [node name="Play" type="Button" parent="Menu"]
 unique_name_in_owner = true

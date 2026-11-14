@@ -1,36 +1,70 @@
 extends Node
 
-const LEVELS: Array[PackedScene] = [
-	preload("res://maps/grassland/grassland.tscn"),
-	preload("res://maps/river_crossing/river_crossing.tscn"),
-	preload("res://maps/highlands/highlands.tscn"),
+const LEVELS := [
+	["Wiesenland", "Wiesenpfad", "Leicht", preload("res://maps/campaign/meadow_path.tscn")],
+	["Wiesenland", "Hangwiese", "Mittel", preload("res://maps/campaign/hillside.tscn")],
+	["Wiesenland", "Nashornpass", "Schwer", preload("res://maps/campaign/rhino_pass.tscn")],
+	["Flussland", "Sandbank", "Leicht", preload("res://maps/campaign/sandbank.tscn")],
+	["Flussland", "Biberdamm", "Mittel", preload("res://maps/campaign/beaver_dam.tscn")],
+	["Flussland", "Stromschnellen", "Schwer", preload("res://maps/campaign/rapids.tscn")],
+	["Tiefenhöhle", "Grotte", "Leicht", preload("res://maps/campaign/grotto.tscn")],
+	["Tiefenhöhle", "Wurmtunnel", "Mittel", preload("res://maps/campaign/worm_tunnel.tscn")],
+	["Tiefenhöhle", "Tiefenschacht", "Schwer", preload("res://maps/campaign/deep_shaft.tscn")],
+	["Dschungelruinen", "Tempelgarten", "Leicht", preload("res://maps/campaign/temple_garden.tscn")],
+	["Dschungelruinen", "Rankenhallen", "Mittel", preload("res://maps/campaign/vine_halls.tscn")],
+	["Dschungelruinen", "Kronendach", "Schwer", preload("res://maps/campaign/canopy.tscn")],
 ]
 const GAME := preload("res://game/game.tscn")
 const COIN_WALLET := preload("res://game/coin_wallet.gd")
 
 @onready var menu: Control = $Menu
-@onready var level_buttons: ButtonGroup = %Grassland.button_group
+@onready var level_list: VBoxContainer = %Levels
 @onready var play_button: Button = %Play
 @onready var back_button: Button = %Back
 @onready var preview_viewport: SubViewport = %Viewport
 @onready var preview_camera: Camera2D = %Viewport/Camera2D
 @onready var coin_balance: Label = %CoinBalance
+
+var level_buttons := ButtonGroup.new()
 var active_game: Node2D
 var preview_level: Node2D
 
 
 func _ready() -> void:
+	for index in LEVELS.size():
+		var level := LEVELS[index] as Array
+		var button := Button.new()
+		button.text = "%02d  %s  ·  %s\n     %s" % [index + 1, level[1], level[2], level[0]]
+		button.add_theme_font_size_override("font_size", 16)
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.custom_minimum_size.y = 56
+		button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		button.toggle_mode = true
+		button.button_group = level_buttons
+		level_list.add_child(button)
+		button.focus_entered.connect(_select_focused_level.bind(button))
+		if index == 0:
+			button.button_pressed = true
 	level_buttons.pressed.connect(_show_preview)
 	_show_preview(level_buttons.get_pressed_button())
 	_update_coin_balance()
 	play_button.grab_focus()
 
 
+func _select_focused_level(button: Button) -> void:
+	if not button.button_pressed:
+		button.button_pressed = true
+		_show_preview(button)
+
+
 func _show_preview(selected: BaseButton) -> void:
+	var scene: PackedScene = LEVELS[selected.get_index()][3]
+	if preview_level != null and preview_level.scene_file_path == scene.resource_path:
+		return
 	if preview_level != null:
 		preview_viewport.remove_child(preview_level)
 		preview_level.queue_free()
-	preview_level = LEVELS[selected.get_index()].instantiate()
+	preview_level = scene.instantiate()
 	preview_level.process_mode = Node.PROCESS_MODE_DISABLED
 	preview_viewport.add_child(preview_level)
 	var terrain: TileMapLayer = preview_level.get_node("Terrain")
@@ -50,7 +84,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _start_level() -> void:
 	var selected := level_buttons.get_pressed_button()
 	active_game = GAME.instantiate()
-	active_game.level_scene = LEVELS[selected.get_index()]
+	active_game.level_scene = LEVELS[selected.get_index()][3]
 	active_game.restart_requested.connect(_restart_level)
 	add_child(active_game)
 	menu.hide()

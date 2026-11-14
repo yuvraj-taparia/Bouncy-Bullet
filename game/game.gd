@@ -33,6 +33,14 @@ func _ready() -> void:
 	hud.set_ammo(player.ammo, Player.MAX_AMMO)
 	level.get_node("Safezone").body_entered.connect(_on_safezone_entered)
 	level.get_node("FallZone").body_entered.connect(_on_fall_zone_entered)
+	var mobs := level.get_node_or_null("Mobs")
+	if mobs != null:
+		for mob in mobs.get_children():
+			mob.player_touched.connect(_on_obstacle_touched)
+	var hazards := level.get_node_or_null("Hazards")
+	if hazards != null:
+		for hazard in hazards.get_children():
+			hazard.player_touched.connect(_on_obstacle_touched)
 	var coins := level.get_node("Coins").get_children()
 	_coins_total = coins.size()
 	for coin in coins:
@@ -62,6 +70,11 @@ func _on_coin_collected() -> void:
 
 func _spawn_point() -> Vector2:
 	return level.get_node("PlayerSpawn").global_position
+
+
+func _on_obstacle_touched(body: Node2D) -> void:
+	if body == player and not _won:
+		player.respawn.call_deferred(_spawn_point())
 
 
 func _on_fall_zone_entered(body: Node2D) -> void:
